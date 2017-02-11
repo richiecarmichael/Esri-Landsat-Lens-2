@@ -1,0 +1,30 @@
+﻿body {
+    background: whitesmoke;
+}
+
+#square1,
+#square2 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -100px 0 0 -100px;
+    width: 200px;
+    height: 200px;
+    color: deeppink;
+    font: 700 32px sans-serif;
+    text-align: center;
+    line-height: 200px;
+    border: 1px solid deeppink;
+    background: #222;
+    box-shadow: 0 0 10px black;
+}
+
+.false #square1,
+.false #square2 {
+    text-indent: -99999px;
+    background: url(qr.png);
+}
+
+.touching {
+    opacity: 0.8;
+}

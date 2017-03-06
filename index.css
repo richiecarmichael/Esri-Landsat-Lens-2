@@ -15,15 +15,15 @@
     text-align: center;
     line-height: 200px;
     border: 1px solid deeppink;
-    background: #222;
+    background: #b6ff00;
     box-shadow: 0 0 10px black;
 }
 
-.false #square1,
+/*.false #square1,
 .false #square2 {
     text-indent: -99999px;
     background: url(qr.png);
-}
+}*/
 
 .touching {
     opacity: 0.8;

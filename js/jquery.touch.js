@@ -32,8 +32,8 @@
         return array[i] || array;
     };
 
-    function Touch(elem) {
-        this.element = elem;
+    function Touch(element) {
+        this.element = element;
 
         // Detect support for Webkit CSS 3d transforms
         this.supportsWebkit3dTransform = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix();
@@ -47,6 +47,8 @@
         this.rotation = 0;    // Default rotation in degrees
         this.scale = 1.0;     // Default scale value
         this.gesture = false; // Flags a 2 touch gesture
+        this.x = 0;
+        this.y = 0;
         $(this.element).on('touchstart', this.touchstart.bind(this));
     };
 
@@ -70,9 +72,10 @@
 
         this.start0X = $(this.element).getMatrix(4) - touches[0].pageX;
         this.start0Y = $(this.element).getMatrix(5) - touches[0].pageY;
-        if (touches.length < 2) { return; }
-        this.start1X = $(this.element).getMatrix(4) - touches[1].pageX;
-        this.start1Y = $(this.element).getMatrix(5) - touches[1].pageY; 
+        if (touches.length === 2) {
+            this.start1X = $(this.element).getMatrix(4) - touches[1].pageX;
+            this.start1Y = $(this.element).getMatrix(5) - touches[1].pageY;
+        }
     };
 
     Touch.prototype.touchmove = function (e) {
@@ -119,11 +122,14 @@
             curX = (x1 + x2) / 2;
             curY = (y1 + y2) / 2;
 
+            var r = Math.arctan2(y1 - y2, x1 - x2) * 180 / Math.PI;
+            $(this.element).html(r);
+
             // Translate, scale and rotate
             transform += this.supportsWebkit3dTransform ? 'translate3d(' + curX + 'px,' + curY + 'px, 0)' :
                                                           'translate(' + curX + 'px,' + curY + 'px)';
             transform += 'scale(' + (this.scale * e.scale) + ')';
-            transform += 'rotate(' + ((this.rotation + e.rotation) % 360) + 'deg)';
+            transform += 'rotate(' + ((this.rotation + r) % 360) + 'deg)';
         }
 
         $(this.element).css({

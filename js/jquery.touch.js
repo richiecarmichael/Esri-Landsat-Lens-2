@@ -33,115 +33,119 @@
     };
 
     function Touch(elem) {
-        this.elem = elem;
-        //this.$elem = $(elem);
+        this.element = elem;
 
         // Detect support for Webkit CSS 3d transforms
-        this.supportsWebkit3dTransform = ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix());
+        this.supportsWebkit3dTransform = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix();
         this.init();
     }
 
-    //static property to store the zIndex for an element
+    // Static property to store the zIndex for an element
     Touch.zIndexCount = 1;
 
     Touch.prototype.init = function () {
-        this.rotation = 0; //default rotation in degrees
-        this.scale = 1.0; //default scale value
-        this.gesture = false; //flags a 2 touch gesture
-        //this.touch = 0;
-        $(this.elem).on('touchstart', this.touchstart.bind(this));
+        this.rotation = 0;    // Default rotation in degrees
+        this.scale = 1.0;     // Default scale value
+        this.gesture = false; // Flags a 2 touch gesture
+        $(this.element).on('touchstart', this.touchstart.bind(this));
     };
 
     Touch.prototype.touchstart = function (e) {
         e.preventDefault();
 
-        //bring item to the front
-        //this.elem.style.zIndex = Touch.zIndexCount++;
-        $(this.elem).css({
+        var touches = [];
+        for (var i = 0; i < e.touches.length; i++) {
+            var touch = e.touches.item(i);
+            if (touch.target.id === $(this.element).attr('id')) {
+                touches.push(touch);
+            }
+        }
+
+        $(this.element).css({
             'zIndex': Touch.zIndexCount++
         });
-        $(this.elem).on('touchmove.touch', this.touchmove.bind(this));
-        $(this.elem).on('touchend.touch touchcancel.touch', this.touchend.bind(this));
+        $(this.element).on('touchmove.touch', this.touchmove.bind(this));
+        $(this.element).on('touchend.touch touchcancel.touch', this.touchend.bind(this));
+        $(this.element).addClass('touching');
 
-        $(this.elem).addClass('touching');
-
-        this.start0X = $(this.elem).getMatrix(4) - e.touches[0].pageX;
-        this.start0Y = $(this.elem).getMatrix(5) - e.touches[0].pageY;
-        if (e.touches.length < 2) { return; }
-        this.start1X = $(this.elem).getMatrix(4) - e.touches[1].pageX;
-        this.start1Y = $(this.elem).getMatrix(5) - e.touches[1].pageY;
+        this.start0X = $(this.element).getMatrix(4) - touches[0].pageX;
+        this.start0Y = $(this.element).getMatrix(5) - touches[0].pageY;
+        if (touches.length < 2) { return; }
+        this.start1X = $(this.element).getMatrix(4) - touches[1].pageX;
+        this.start1Y = $(this.element).getMatrix(5) - touches[1].pageY; 
     };
 
     Touch.prototype.touchmove = function (e) {
         e.preventDefault();
 
-        $(this.elem).html(e.touches.length);
-
-        var myTransform = '';
-        var x1 = 0;
-        var y1 = 0;
-        var    x2 = 0;
-        var    y2 = 0;
-        var curX = 0;
-        var    curY = 0;
-
-        //drag event
-        if (e.touches.length === 1) {
-
-            //get drag point
-            curX = this.start0X + e.touches[0].pageX;
-            curY = this.start0Y + e.touches[0].pageY;
-
-            //translate drag
-            myTransform += this.supportsWebkit3dTransform ?
-                            'translate3d(' + curX + 'px,' + curY + 'px, 0)' :
-                            'translate(' + curX + 'px,' + curY + 'px)';
-            myTransform += 'scale(' + (this.scale) + ')';
-            myTransform += 'rotate(' + ((this.rotation) % 360) + 'deg)';
-
-        } else if (e.touches.length === 2) {
-            //gesture event
-            this.gesture = true;
-
-            //get middle point between two touches for drag
-            x1 = this.start0X + e.touches[0].pageX;
-            y1 = this.start0Y + e.touches[0].pageY;
-            x2 = this.start1X + e.touches[1].pageX;
-            y2 = this.start1Y + e.touches[1].pageY;
-            curX = (x1 + x2) / 2, curY = (y1 + y2) / 2;
-
-            //translate drag
-            myTransform += this.supportsWebkit3dTransform ?
-                     'translate3d(' + curX + 'px,' + curY + 'px, 0)' :
-                     'translate(' + curX + 'px,' + curY + 'px)';
-
-            //scale and rotate
-            myTransform += 'scale(' + (this.scale * e.scale) + ')';
-            myTransform += 'rotate(' + ((this.rotation + e.rotation) % 360) + 'deg)';
+        var touches = [];
+        for (var i = 0; i < e.touches.length; i++) {
+            var touch = e.touches.item(i);
+            if (touch.target.id === $(this.element).attr('id')) {
+                touches.push(touch);
+            }
         }
 
-        $(this.elem).css({
-            'webkitTransform': myTransform,
-            'MozTransform': myTransform,
-            'msTransform': myTransform,
-            'OTransform': myTransform,
-            'transform': myTransform,
+        var transform = '';
+        var x1 = 0;
+        var y1 = 0;
+        var x2 = 0;
+        var y2 = 0;
+        var curX = 0;
+        var curY = 0;
+
+        // Drag event
+        if (touches.length === 1) {
+
+            // Get drag point
+            curX = this.start0X + touches[0].pageX;
+            curY = this.start0Y + touches[0].pageY;
+
+            // Translate, scale and rotate
+            transform += this.supportsWebkit3dTransform ? 'translate3d(' + curX + 'px,' + curY + 'px, 0)' :
+                                                          'translate(' + curX + 'px,' + curY + 'px)';
+            transform += 'scale(' + (this.scale) + ')';
+            transform += 'rotate(' + ((this.rotation) % 360) + 'deg)';
+
+        } else if (touches.length === 2) {
+            // Gesture event
+            this.gesture = true;
+
+            // Get middle point between two touches for drag
+            x1 = this.start0X + touches[0].pageX;
+            y1 = this.start0Y + touches[0].pageY;
+            x2 = this.start1X + touches[1].pageX;
+            y2 = this.start1Y + touches[1].pageY;
+            curX = (x1 + x2) / 2;
+            curY = (y1 + y2) / 2;
+
+            // Translate, scale and rotate
+            transform += this.supportsWebkit3dTransform ? 'translate3d(' + curX + 'px,' + curY + 'px, 0)' :
+                                                          'translate(' + curX + 'px,' + curY + 'px)';
+            transform += 'scale(' + (this.scale * e.scale) + ')';
+            transform += 'rotate(' + ((this.rotation + e.rotation) % 360) + 'deg)';
+        }
+
+        $(this.element).css({
+            'webkitTransform': transform,
+            'MozTransform': transform,
+            'msTransform': transform,
+            'OTransform': transform,
+            'transform': transform,
         });
-        //this.elem.style.webkitTransform = this.elem.style.MozTransform = this.elem.style.msTransform = this.elem.style.OTransform = this.elem.style.transform = myTransform;
     };
 
     Touch.prototype.touchend = function (e) {
         e.preventDefault();
 
-        $(this.elem).off('.touch');
+        $(this.element).off('.touch');
+        $(this.element).removeClass('touching');
 
-        //store scale and rotate values on gesture end
+        // Store scale and rotate values on gesture end
         if (this.gesture) {
             this.scale *= e.scale;
             this.rotation = (this.rotation + e.rotation) % 360;
             this.gesture = false;
         }
-
-        $(this.elem).removeClass('touching');
     };
 }(jQuery));

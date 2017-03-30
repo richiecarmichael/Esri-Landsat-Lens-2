@@ -21,7 +21,15 @@ require([
 function (
     ) {
     $(document).ready(function () {
+        //
+        $('body').bind('touchmove', function (e) {
+            e.preventDefault();
+        });
+
+        //
         var square1 = $('#square1').touch();
         var square2 = $('#square2').touch();
+        var square1 = $('#square3').touch();
+        var square2 = $('#square4').touch();
     });
 });

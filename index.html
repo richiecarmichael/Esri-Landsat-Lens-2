@@ -1,47 +1,71 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head prefix='og: http://ogp.me/ns#'>
-    <title></title>
+    <!--
+    Copyright 2017 Esri
+
+    Licensed under the Apache License, Version 2.0 (the 'License');
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at:
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an 'AS IS' BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    -->
+    <title>Landsat Lens</title>
 
     <meta http-equiv='content-type' content='text/html;charset=utf-8' />
     <meta name='author' content='Esri' />
-    <meta name='keywords' content='' />
-    <meta name='description' content='' />
+    <meta name='keywords' content='landsat lens imagery satellite epoch change detection time warp esri' />
+    <meta name='description' content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
     <meta name='robots' content='index,follow' />
 
     <meta name='twitter:card' value='summary' />
-    <meta name='twitter:title' content='' />
+    <meta name='twitter:title' content='Landsat Lens' />
     <meta name='twitter:site' content='@esri' />
-    <meta name='twitter:description' content='' />
-    <!--<meta name='twitter:image' content='/img/zzz.png' />-->
+    <meta name='twitter:description' content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
+    <meta name='twitter:image' content='/img/hawaii.jpg' />
 
     <meta property='og:locale' content='en_us' />
-    <meta property='og:title' content='' />
-    <meta property='og:description' content='' />
+    <meta property='og:title' content='Landsat Lens' />
+    <meta property='og:description' content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
     <meta property='og:type' content='website' />
     <meta property='og:url' content='/index.html' />
-    <!--<meta property='og:image' content='/img/zzz.png' />-->
+    <meta property='og:image' content='/hawaii.jpg' />
 
     <meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no' />
     <meta name='apple-mobile-web-app-capable' content='yes' />
     <meta name='apple-touch-fullscreen' content='yes' />
-    <link rel='apple-touch-icon' href='/img/apple-touch-icon.png' />
+    <link rel='apple-touch-icon' href='/img/icon.jpg' />
 
     <link type='image/ico' href='img/favicon.ico' rel='shortcut icon' />
     <link type='image/ico' href='img/favicon.ico' rel='icon' />
 
-    <link type='text/css' rel='stylesheet' href='//js.arcgis.com/4.2/esri/css/main.css' />
+    <link type='text/css' rel='stylesheet' href='//js.arcgis.com/4.3/esri/css/main.css' />
     <link type='text/css' rel='stylesheet' href='index.css' />
 
     <script src='js/jquery-2.2.4.min.js'></script>
     <script src='js/jquery.touch.js'></script>
-    <script type='text/javascript' src='//js.arcgis.com/4.2/'></script>
+    <script type='text/javascript' src='//js.arcgis.com/4.3/'></script>
     <script type='text/javascript' src='index.js'></script>
+    <script>
+//        (function (i, s, o, g, r, a, m) {
+//            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+//                (i[r].q = i[r].q || []).push(arguments)
+//            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+//            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+//        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+//        ga('create', 'UA-10866840-32', 'auto');
+//        ga('send', 'pageview');
+    </script>
 </head>
 <body>
-    <div id='square1' class='touchWindow'></div>
-    <div id='square2' class='touchWindow'></div>
-    <div id='square3' class='touchWindow'></div>
-    <div id='square4' class='touchWindow'></div>
+    <div id='square1' class='touchWindow' data-year=''></div>
+    <div id='square2' class='touchWindow' data-year=''></div>
+    <div id='square3' class='touchWindow' data-year=''></div>
+    <div id='square4' class='touchWindow' data-year=''></div>
 </body>
 </html>

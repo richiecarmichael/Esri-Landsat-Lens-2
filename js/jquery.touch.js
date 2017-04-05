@@ -18,6 +18,10 @@
 (function ($) {
     'use strict';
     
+    var defaults = {
+        touchClass: 'touching'
+    };
+    
     //
     var props = $.event.props || [];
     props.push('touches');
@@ -25,15 +29,7 @@
     props.push('rotation');
     $.event.props = props;
 
-    $(document).ready(function () {
-        $.each($('.touchWindow'), function () {
-            if (!$(this).data('plugin_touch')) {
-                $(this).data('plugin_touch', new Touch(this));
-            }
-        });
-    });
-    
-    function Touch(element) {
+    function Touch(element, options) {
         // Store element
         this.element = element;
 
@@ -50,6 +46,9 @@
         this.ds = 1;
 
         //
+        this.options = $.extend({}, defaults, options);
+        
+        //
         this.origin = {};
 
         //
@@ -64,7 +63,7 @@
     Touch.prototype.touchstart = function (e) {
         // Prevent event bubbling.
         e.preventDefault();
-
+        
         // Store originating touch positions.
         for (var i = 0; i < e.touches.length; i++) {
             var touch = e.touches.item(i);
@@ -87,7 +86,7 @@
         });
 
         // Add touching class.
-        $(this.element).addClass('touchContact');
+        $(this.element).addClass(this.options.touchClass);
     };
 
     Touch.prototype.touchmove = function (e) {
@@ -112,16 +111,13 @@
 
         // Exit if no fingers touching.
         if (fingers1.length === 0 || fingers2.length === 0) { return; }
-        if (fingers1.length !== fingers2.length) {
-            alert("not equal");
-            return;
-        }
+        if (fingers1.length !== fingers2.length) { return; }
+        var count = fingers1.length;
 
         // Calculate translation deltas.
         this.dx = 0;
         this.dy = 0;
-        
-        for (var i = 0; i < fingers1.length; i++) {
+        for (var i = 0; i < count; i++) {
             var id = fingers1[i];
             this.dx += touches[id].x - this.origin[id].x
             this.dy += touches[id].y - this.origin[id].y 
@@ -129,42 +125,91 @@
         this.dx /= fingers1.length;
         this.dy /= fingers1.length;
 
-        //// Calculate rotation deltas.
-        //this.dr = 0;
-        //if (fingers1.length > 1) {
-        //    for (var i = 0; i < fingers1.length - 1; i++) {
-        //        var id = fingers1[i];
-        //        var r1 = Math.atan2(
-        //            this.origin[id].y - this.origin[i + 1].y,
-        //            this.origin[id].x - this.origin[i + 1].x
-        //        );
-        //        var r2 = Math.atan2(
-        //            touches[i].y - touches[i + 1].y,
-        //            touches[i].x - touches[i + 1].x
-        //        );
-        //        this.dr += r2 - r1;
-        //    }
-        //}
-        //this.dr *= 180 / Math.PI;
-        //this.dr /= touches.length;
-
-        //// Calculate scale deltas.
-        //this.ds = 1;
-        //if (touches.length > 1) {
-        //    this.ds = 0;
-        //    for (var i = 0; i < touches.length - 1; i++) {
-        //        var d1 = Math.sqrt(
-        //            Math.pow(this.origin[i].x - this.origin[i + 1].x, 2) +
-        //            Math.pow(this.origin[i].y - this.origin[i + 1].y, 2)
-        //        );
-        //        var d2 = Math.sqrt(
-        //            Math.pow(touches[i].x - touches[i + 1].x, 2) +
-        //            Math.pow(touches[i].y - touches[i + 1].y, 2)
-        //        );
-        //        this.ds += d2 / d1;
-        //    }
-        //    this.ds /= touches.length;
-        //}
+        // Calculate rotation deltas.
+        this.dr = 0;
+        if (count > 1) {
+            // Find center of original hand 
+            var hand1x =0;
+            var hand1y =0;
+            for (var i = 0; i < count; i++) {
+                var id = fingers1[i];
+                hand1x += this.origin[id].x;
+                hand1y += this.origin[id].y;
+            }
+            hand1x /= count;
+            hand1y /= count;
+            //console.log("1:" + hand1x + " " + hand1y);
+            
+            // Find center of current hand 
+            var hand2x =0;
+            var hand2y =0;
+            for (var i = 0; i < count; i++) {
+                var id = fingers2[i];
+                hand2x += touches[id].x;
+                hand2y += touches[id].y;
+            }
+            hand2x /= count;
+            hand2y /= count;
+            //console.log("2: " + hand2x + " " + hand2y);
+            
+            // Set angle to center
+            for (var i = 0; i < count; i++) {
+                var id = fingers1[i];
+                var r1 = Math.atan2(
+                    this.origin[id].y - hand1y,
+                    this.origin[id].x - hand1x
+                );
+                var r2 = Math.atan2(
+                    touches[id].y - hand2y,
+                    touches[id].x - hand2x
+                );
+                this.dr += r2 - r1;
+            }
+        }
+        //
+        this.dr *= 180 / Math.PI;
+        this.dr /= count;
+        
+        // Calculate scale deltas.
+        this.ds = 1;
+        if (touches.length > 1) {
+            this.ds = 0;
+            
+            // Find size of original hand
+            var minx1 = null;
+            var miny1 = null;
+            var maxx1 = null;
+            var maxy1 = null;
+            for (var i = 0; i < count; i++) {
+                var id = fingers1[i];
+                var x = this.origin[id].x;
+                var y = this.origin[id].y;
+                minx1 = minx1 === null ? x : Math.min(minx1, x);
+                miny1 = miny1 === null ? y : Math.min(miny1, y);
+                maxx1 = maxx1 === null ? x : Math.max(maxx1, x);
+                maxy1 = maxy1 === null ? y : Math.max(maxy1, y);
+            }
+            
+            // Find size of original hand
+            var minx2 = null;
+            var miny2 = null;
+            var maxx2 = null;
+            var maxy2 = null;
+            for (var i = 0; i < count; i++) {
+                var id = fingers2[i];
+                var x = touches[id].x;
+                var y = touches[id].y;
+                minx2 = minx2 === null ? x : Math.min(minx2, x);
+                miny2 = miny2 === null ? y : Math.min(miny2, y);
+                maxx2 = maxx2 === null ? x : Math.max(maxx2, x);
+                maxy2 = maxy2 === null ? y : Math.max(maxy2, y);
+            }
+            
+            // 
+            var scalex = (maxx2 - minx2) / (maxx1 - minx1);
+            var scaley = (maxy2 - miny2) / (maxy1 - miny1);
+            this.ds = Math.max(scalex, scaley) / 2;
+        }
 
         // Prepare transformation description.
         var x = this.x + this.dx;
@@ -204,13 +249,21 @@
         this.origin = {};
 
         // Stop listening to touch events. Remove touching class.
-        $(this.element).off('.touch');
-        $(this.element).removeClass('touchContact');
+        $(this.element).removeClass(this.options.touchClass);
 
         // Store last used transformation parameters.
         this.x += this.dx;
         this.y += this.dy;
         this.r = (this.r + this.dr) % 360;
         this.s *= this.ds;
+    };
+    
+    // plugin wrapper
+    $.fn.touch = function (options) {
+        return this.each(function () {
+            if (!$.data(this, "plugin_touch")) {
+                $.data(this, 'plugin_touch', new Touch(this, options));
+            }
+        });
     };
 }(jQuery));

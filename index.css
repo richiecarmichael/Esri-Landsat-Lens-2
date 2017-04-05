@@ -1,20 +1,13 @@
-﻿body {
-    background: whitesmoke;
-}
-
-#square1,
-#square2,
-#square3,
-#square4 {
-    
-}
-
-.touchCanvas {
-    position: absolute;
-    left:0;
-    right:0;
-    top:0;
-    bottom:0;
+html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: Helvetica', 'Arial', sans-serif;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .touchWindow {
@@ -29,8 +22,8 @@
     font: 700 32px sans-serif;
     text-align: center;
     line-height: 200px;
-    border: 1px solid deeppink;
-    background: #b6ff00;
+    border: 1px solid gray;
+    background: white;
 }
 
 .touchContact {

@@ -6,10 +6,23 @@
 #square2,
 #square3,
 #square4 {
+    
+}
+
+.touchCanvas {
+    position: absolute;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+}
+
+.touchWindow {
     position: absolute;
     left: 50%;
     top: 50%;
     margin: -100px 0 0 -100px;
+    box-shadow: 0 0 10px black;
     width: 200px;
     height: 200px;
     color: deeppink;
@@ -18,9 +31,8 @@
     line-height: 200px;
     border: 1px solid deeppink;
     background: #b6ff00;
-    box-shadow: 0 0 10px black;
 }
 
-.touching {
+.touchContact {
     opacity: 0.8;
 }

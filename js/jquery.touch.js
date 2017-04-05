@@ -1,15 +1,23 @@
-/*
- * jquery.touch.js 0.0.5 - https://github.com/yckart/jquery.touch.js
- * Drag, scale and rotate elements during touch.
- *
- * Copyright (c) 2013 Yannick Albert (http://yckart.com)
- * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
- * 2013/02/23
- */
+/* ------------------------------------------------------------
+
+   Copyright 2017 Esri
+
+   Licensed under the Apache License, Version 2.0 (the 'License');
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at:
+   http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an 'AS IS' BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+--------------------------------------------------------------- */
 
 (function ($) {
     'use strict';
-
+    
     //
     var props = $.event.props || [];
     props.push('touches');
@@ -17,121 +25,158 @@
     props.push('rotation');
     $.event.props = props;
 
-    // plugin wrapper
-    $.fn.touch = function () {
-        return $(this).each(function () {
+    $(document).ready(function () {
+        $.each($('.touchWindow'), function () {
             if (!$(this).data('plugin_touch')) {
                 $(this).data('plugin_touch', new Touch(this));
             }
         });
-    };
-
-    $.fn.getMatrix = function (i) {
-        if ($(this).css('transform') === 'none') { return 0; }
-        var array = $(this).css('transform').split('(')[1].split(')')[0].split(',');
-        return array[i] || array;
-    };
-
+    });
+    
     function Touch(element) {
+        // Store element
         this.element = element;
 
-        // Detect support for Webkit CSS 3d transforms
-        this.supportsWebkit3dTransform = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix();
-        this.init();
+        // Initialize transformation parameters.
+        this.x = 0;
+        this.y = 0;
+        this.r = 0;
+        this.s = 1;
+
+        // Initialize transformation deltas.
+        this.dx = 0;
+        this.dy = 0;
+        this.dr = 0;
+        this.ds = 1;
+
+        //
+        this.origin = {};
+
+        //
+        $(this.element).on('touchstart', this.touchstart.bind(this));
+        $(this.element).on('touchmove.touch', this.touchmove.bind(this));
+        $(this.element).on('touchend.touch touchcancel.touch', this.touchend.bind(this));
     }
 
     // Static property to store the zIndex for an element
     Touch.zIndexCount = 1;
 
-    Touch.prototype.init = function () {
-        this.rotation = 0;    // Default rotation in degrees
-        this.scale = 1.0;     // Default scale value
-        this.gesture = false; // Flags a 2 touch gesture
-        this.x = 0;
-        this.y = 0;
-        $(this.element).on('touchstart', this.touchstart.bind(this));
-    };
-
     Touch.prototype.touchstart = function (e) {
+        // Prevent event bubbling.
         e.preventDefault();
 
-        var touches = [];
+        // Store originating touch positions.
         for (var i = 0; i < e.touches.length; i++) {
             var touch = e.touches.item(i);
             if (touch.target.id === $(this.element).attr('id')) {
-                touches.push(touch);
+                if (touch.identifier in this.origin) {
+                    // Finger already tracked
+                }
+                else {
+                    this.origin[touch.identifier] = {
+                        x: touch.pageX,
+                        y: touch.pageY
+                    }
+                }
             }
         }
 
+        // Force element to top.
         $(this.element).css({
             'zIndex': Touch.zIndexCount++
         });
-        $(this.element).on('touchmove.touch', this.touchmove.bind(this));
-        $(this.element).on('touchend.touch touchcancel.touch', this.touchend.bind(this));
-        $(this.element).addClass('touching');
 
-        this.start0X = $(this.element).getMatrix(4) - touches[0].pageX;
-        this.start0Y = $(this.element).getMatrix(5) - touches[0].pageY;
-        if (touches.length === 2) {
-            this.start1X = $(this.element).getMatrix(4) - touches[1].pageX;
-            this.start1Y = $(this.element).getMatrix(5) - touches[1].pageY;
-        }
+        // Add touching class.
+        $(this.element).addClass('touchContact');
     };
 
     Touch.prototype.touchmove = function (e) {
+        // Prevent event bubbling.
         e.preventDefault();
 
+        // Filter events not related to current element.
         var touches = [];
         for (var i = 0; i < e.touches.length; i++) {
             var touch = e.touches.item(i);
             if (touch.target.id === $(this.element).attr('id')) {
-                touches.push(touch);
+                touches[touch.identifier] = {
+                    x: touch.pageX,
+                    y: touch.pageY
+                }
             }
         }
 
-        var transform = '';
-        var x1 = 0;
-        var y1 = 0;
-        var x2 = 0;
-        var y2 = 0;
-        var curX = 0;
-        var curY = 0;
+        // Get Fingers
+        var fingers1 = Object.keys(this.origin);
+        var fingers2 = Object.keys(touches);
 
-        // Drag event
-        if (touches.length === 1) {
-
-            // Get drag point
-            curX = this.start0X + touches[0].pageX;
-            curY = this.start0Y + touches[0].pageY;
-
-            // Translate, scale and rotate
-            transform += this.supportsWebkit3dTransform ? 'translate3d(' + curX + 'px,' + curY + 'px, 0)' :
-                                                          'translate(' + curX + 'px,' + curY + 'px)';
-            transform += 'scale(' + (this.scale) + ')';
-            transform += 'rotate(' + ((this.rotation) % 360) + 'deg)';
-
-        } else if (touches.length === 2) {
-            // Gesture event
-            this.gesture = true;
-
-            // Get middle point between two touches for drag
-            x1 = this.start0X + touches[0].pageX;
-            y1 = this.start0Y + touches[0].pageY;
-            x2 = this.start1X + touches[1].pageX;
-            y2 = this.start1Y + touches[1].pageY;
-            curX = (x1 + x2) / 2;
-            curY = (y1 + y2) / 2;
-
-            var r = Math.arctan2(y1 - y2, x1 - x2) * 180 / Math.PI;
-            $(this.element).html(r);
-
-            // Translate, scale and rotate
-            transform += this.supportsWebkit3dTransform ? 'translate3d(' + curX + 'px,' + curY + 'px, 0)' :
-                                                          'translate(' + curX + 'px,' + curY + 'px)';
-            transform += 'scale(' + (this.scale * e.scale) + ')';
-            transform += 'rotate(' + ((this.rotation + r) % 360) + 'deg)';
+        // Exit if no fingers touching.
+        if (fingers1.length === 0 || fingers2.length === 0) { return; }
+        if (fingers1.length !== fingers2.length) {
+            alert("not equal");
+            return;
         }
 
+        // Calculate translation deltas.
+        this.dx = 0;
+        this.dy = 0;
+        
+        for (var i = 0; i < fingers1.length; i++) {
+            var id = fingers1[i];
+            this.dx += touches[id].x - this.origin[id].x
+            this.dy += touches[id].y - this.origin[id].y 
+        }
+        this.dx /= fingers1.length;
+        this.dy /= fingers1.length;
+
+        //// Calculate rotation deltas.
+        //this.dr = 0;
+        //if (fingers1.length > 1) {
+        //    for (var i = 0; i < fingers1.length - 1; i++) {
+        //        var id = fingers1[i];
+        //        var r1 = Math.atan2(
+        //            this.origin[id].y - this.origin[i + 1].y,
+        //            this.origin[id].x - this.origin[i + 1].x
+        //        );
+        //        var r2 = Math.atan2(
+        //            touches[i].y - touches[i + 1].y,
+        //            touches[i].x - touches[i + 1].x
+        //        );
+        //        this.dr += r2 - r1;
+        //    }
+        //}
+        //this.dr *= 180 / Math.PI;
+        //this.dr /= touches.length;
+
+        //// Calculate scale deltas.
+        //this.ds = 1;
+        //if (touches.length > 1) {
+        //    this.ds = 0;
+        //    for (var i = 0; i < touches.length - 1; i++) {
+        //        var d1 = Math.sqrt(
+        //            Math.pow(this.origin[i].x - this.origin[i + 1].x, 2) +
+        //            Math.pow(this.origin[i].y - this.origin[i + 1].y, 2)
+        //        );
+        //        var d2 = Math.sqrt(
+        //            Math.pow(touches[i].x - touches[i + 1].x, 2) +
+        //            Math.pow(touches[i].y - touches[i + 1].y, 2)
+        //        );
+        //        this.ds += d2 / d1;
+        //    }
+        //    this.ds /= touches.length;
+        //}
+
+        // Prepare transformation description.
+        var x = this.x + this.dx;
+        var y = this.y + this.dy;
+        var r = (this.r + this.dr) % 360;
+        var s = this.s * this.ds;
+        var transform =
+            'translate(' + x + 'px,' + y + 'px) ' +
+            'scale(' + s + ') ' +
+            'rotate(' + r + 'deg)';
+
+        // Apply transformation.
         $(this.element).css({
             'webkitTransform': transform,
             'MozTransform': transform,
@@ -142,16 +187,30 @@
     };
 
     Touch.prototype.touchend = function (e) {
+        // Prevent event bubbling.
         e.preventDefault();
 
-        $(this.element).off('.touch');
-        $(this.element).removeClass('touching');
-
-        // Store scale and rotate values on gesture end
-        if (this.gesture) {
-            this.scale *= e.scale;
-            this.rotation = (this.rotation + e.rotation) % 360;
-            this.gesture = false;
+        // Is this the last finger? If so, do not proceed.
+        var fingerCount = 0;
+        for (var i = 0; i < e.touches.length; i++) {
+            var touch = e.touches.item(i);
+            if (touch.target.id === $(this.element).attr('id')) {
+                fingerCount++;
+            }
         }
+        if (fingerCount !== 0) { return; }
+
+        // Clear origin
+        this.origin = {};
+
+        // Stop listening to touch events. Remove touching class.
+        $(this.element).off('.touch');
+        $(this.element).removeClass('touchContact');
+
+        // Store last used transformation parameters.
+        this.x += this.dx;
+        this.y += this.dy;
+        this.r = (this.r + this.dr) % 360;
+        this.s *= this.ds;
     };
 }(jQuery));

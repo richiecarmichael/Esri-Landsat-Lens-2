@@ -1,7 +1,8 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head prefix='og: http://ogp.me/ns#'>
     <!--
+    
     Copyright 2017 Esri
 
     Licensed under the Apache License, Version 2.0 (the 'License');
@@ -14,6 +15,7 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
     -->
     <title>Landsat Lens</title>
 
@@ -45,10 +47,12 @@
     <link type='image/ico' href='img/favicon.ico' rel='icon' />
 
     <link type='text/css' rel='stylesheet' href='//js.arcgis.com/4.3/esri/css/main.css' />
+    <link type='text/css' rel='stylesheet' href='css/bootstrap.min.css' />
     <link type='text/css' rel='stylesheet' href='index.css' />
 
-    <script src='js/jquery-2.2.4.min.js'></script>
-    <script src='js/jquery.touch.js'></script>
+    <script type='text/javascript' src='js/jquery-2.2.4.min.js'></script>
+    <script type='text/javascript' src='js/jquery.touch.js'></script>
+    <script type='text/javascript' src='js/bootstrap.min.js'></script>
     <script type='text/javascript' src='//js.arcgis.com/4.3/'></script>
     <script type='text/javascript' src='index.js'></script>
     <script>
@@ -63,9 +67,165 @@
     </script>
 </head>
 <body>
-    <div id='square1' class='touchWindow' data-year=''></div>
-    <div id='square2' class='touchWindow' data-year=''></div>
-    <div id='square3' class='touchWindow' data-year=''></div>
-    <div id='square4' class='touchWindow' data-year=''></div>
+    <div id='map-container'>
+        <div id='map'></div>
+        <div id='lens-container'></div>
+    </div>
+    <nav class='navbar navbar-default navbar-fixed-top'>
+        <div class='container-fluid'>
+            <div class='navbar-header'>
+                <button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#navbar' aria-expanded='false'>
+                    <span class='sr-only'>Toggle navigation</span>
+                    <span class='icon-bar'></span>
+                    <span class='icon-bar'></span>
+                    <span class='icon-bar'></span>
+                </button>
+                <div id='title'>Landsat Lens</div>
+            </div>
+            <div class='collapse navbar-collapse' id='navbar'>
+                <ul class='nav navbar-nav navbar-right'>
+                    <li class='dropdown'>
+                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>
+                            <div class='rc-item'>
+                                <div class='rc-item-title'>Bookmark</div>
+                                <div class='rc-item-value'>Pick</div>
+                            </div>
+                            <span class='caret'></span>
+                        </a>
+                        <!-- 
+                            The following list of preset bookmarks was inspired by:
+                            http://earthobservatory.nasa.gov/Features/WorldOfChange/
+                        -->
+                        <ul id='bookmarks' class='dropdown-menu'>
+                            <li>
+                                <a data-extent='6391083, 5442255, 6853985, 5818936' href='#'>Aral Sea</a>
+                            </li>
+                            <li>
+                                <a data-extent='-10200228, 3412905, -10142366, 3459990' href='#'>Atchafalaya Bay</a>
+                            </li>
+                            <li>
+                                <a data-extent='-7796340, 5100238, -7781875, 5112009' href='#'>Cape Cod</a>
+                            </li>
+                            <li>
+                                <a data-extent='-16428273, 8609915, -16312547, 8704086' href='#'>Columbia Glacier</a>
+                            </li>
+                            <li>
+                                <a data-extent='-13608687, 5807163, -13594222, 5818342' href='#'>Mount Saint Helens</a>
+                            </li>
+                            <li>
+                                <a data-extent='-12443536, 4405304, -12327810, 4499474' href='#'>Lake Powell</a>
+                            </li>
+                            <li>
+                                <a data-extent='-12845948, 4302382, -12788085, 4347098' href='#'>Las Vegas</a>
+                            </li>
+                            <li>
+                                <a data-extent='6108081, 2864714, 6137013, 2888257' href='#'>Palm Jebel Ali</a>
+                            </li>
+                            <li>
+                                <a data-function='13231089, 4522106, 13288952, 4569192' href='#'>Yellow River Delta</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class='dropdown'>
+                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>
+                            <div class='rc-item'>
+                                <div class='rc-item-title'>Theme</div>
+                                <div class='rc-item-value'>Natural Color</div>
+                            </div>
+                            <span class='caret'></span>
+                        </a>
+                        <ul class='dropdown-menu rc-variable'>
+                            <li>
+                                <a data-function='' href='#'>Agriculture</a>
+                            </li>
+                            <li>
+                                <a data-function='' href='#'>Color Infrared</a>
+                            </li>
+                            <li class='active'>
+                                <a data-function='' href='#'>Natural Color</a>
+                            </li>
+                            <li>
+                                <a data-function='' href='#'>Moisture Index</a>
+                            </li>
+                            <li>
+                                <a data-function='' href='#'>Vegetatuin Index</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class='dropdown'>
+                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>
+                            <div class='rc-item'>
+                                <div class='rc-item-title'>Windows</div>
+                                <div class='rc-item-value'>Add</div>
+                            </div>
+                            <span class='caret'></span>
+                        </a>
+                        <ul class='dropdown-menu rc-year'>
+                            <li>
+                                <a data-year='' href='#'>1950</a>
+                            </li>
+                            <li>
+                                <a data-year='' href='#'>1960</a>
+                            </li>
+                            <li>
+                                <a data-year='' href='#'>1970</a>
+                            </li>
+                            <li>
+                                <a data-year='' href='#'>1980</a>
+                            </li>
+                            <li>
+                                <a data-year='' href='#'>1990</a>
+                            </li>
+                            <li>
+                                <a data-year='' href='#'>2000</a>
+                            </li>
+                            <li>
+                                <a data-year='' href='#'>2010</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a id='buttonHelp' href='#'>Help</a></li>
+                    <li><a id='buttonAbout' href='#'>About</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id='modalHelp' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='label1'>
+        <div class='modal-dialog' role='document'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+                    <h4 class='modal-title' id='label1'>How to use this App</h4>
+                </div>
+                <div class='modal-body'>
+                    <p>This application was designed and developed by <a target="_blank" href='http://www.esri.com'>Esri</a>'s <a target="_blank" href='http://blogs.esri.com/esri/apl/'>Applications Prototype Lab</a> in Redlands, California. The application was built using the following technologies:</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id='modalAbout' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='label2'>
+        <div class='modal-dialog' role='document'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+                    <h4 class='modal-title' id='label2'>About this App</h4>
+                </div>
+                <div class='modal-body'>
+                    <p>This application was designed and developed by <a target="_blank" href='http://www.esri.com'>Esri</a>'s <a target="_blank" href='http://blogs.esri.com/esri/apl/'>Applications Prototype Lab</a> in Redlands, California. The application was built using the following technologies:</p>
+                    <ul style='margin-left: -20px;'>
+                        <li><a target="_blank" href='http://developers.arcgis.com/javascript/'>ArcGIS API for JavaScript</a> by <a target="_blank" href='https://www.esri.com'>Esri</a></li>
+                        <li><a target="_blank" href='http://getbootstrap.com/'>Bootstrap</a> by <a target="_blank" href='https://twitter.com/'>Twitter Inc.</a></li>
+                        <li><a target="_blank" href='http://d3js.org/'>D3.js</a> by <a target="_blank" href='http://bost.ocks.org/mike/'>Mike Bostock</a></li>
+                        <li><a target="_blank" href='http://jquery.com/'>jQuery</a> by the jQuery Foundation Inc.</li>
+                    </ul>
+                    <p>
+                        Data in this presentation is courtesy of <a target="_blank" href='http://www.soc.hawaii.edu/mora/Team.html'>Dr. Camilo Mora</a> from the <a target="_blank" href='https://www.hawaii.edu/'>University of Hawai'i's</a> <a target="_blank" href='http://www.geography.hawaii.edu/index.html'>Department of Geography</a>. The following is an extract from <strong>Global risk of deadly heat anomalies (2015)</strong> by Mora et al.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

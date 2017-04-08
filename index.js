@@ -16,13 +16,118 @@
 --------------------------------------------------------------- */
 
 require([
+    'esri/Map',
+    'esri/Graphic',
+    'esri/geometry/Extent',
+    'esri/geometry/SpatialReference',
+    'esri/geometry/Point',
+    'esri/geometry/ScreenPoint',
+    'esri/views/MapView',
+    'esri/layers/GraphicsLayer',
+    'esri/symbols/SimpleFillSymbol',
+    'esri/renderers/SimpleRenderer',
+    'esri/widgets/Home',
+    'esri/widgets/Search',
+    'esri/widgets/ScaleBar',
+    'esri/portal/Portal',
+    'esri/identity/OAuthInfo',
+    'esri/identity/IdentityManager',
+    'dojo/number',
     'dojo/domReady!'
 ],
-function (
+    function (
+        Map,
+        Graphic,
+        Extent,
+        SpatialReference,
+        Point,
+        ScreenPoint,
+        MapView,
+        GraphicsLayer,
+        SimpleFillSymbol,
+        SimpleRenderer,
+        Home,
+        Search,
+        ScaleBar,
+        Portal,
+        OAuthInfo,
+        IdentityManager,
+        number
     ) {
-    $(document).ready(function () {
-        $('.touchWindow').touch({
-            touchClass: 'touchContact'
+        $(document).ready(function () {
+            // Enforce strict mode
+            'use strict';
+
+            //
+            var palms1 = $('#bookmarks li a').get(7);
+            var palms2 = $(palms1).attr('data-extent').split(',');
+
+            // Map view
+            var _view = new MapView({
+                container: 'map',
+                extent: new Extent({
+                    xmin: Number(palms2[0]),
+                    ymin: Number(palms2[1]),
+                    xmax: Number(palms2[2]),
+                    ymax: Number(palms2[3]),
+                    spatialReference: SpatialReference.WebMercator
+                }),
+                padding: {
+                    left: 0,
+                    top: 50,
+                    right: 0,
+                    bottom: 0
+                },
+                ui: {
+                    components: [
+                        'zoom'
+                    ]
+                },
+                map: new Map({
+                    basemap: 'osm'
+                })
+            });
+            _view.then(function () {
+                addLens();
+            });
+
+            ////
+            //_view.ui.add(new Search({ view: _view }), "top-right");
+            _view.ui.add(new ScaleBar({ view: _view }), "bottom-right");
+
+            //$('.rc-touching').touch({
+            //    touchClass: 'rc-touching'
+            //});
+            //var coordinates = $('#bookmarks li a').get(7).attr('data-extent').split(',');
+
+            $('#bookmarks li a').click(function () {
+                var coordinates = $(this).attr('data-extent').split(',');
+                _view.extent = new Extent({
+                    xmin: Number(coordinates[0]),
+                    ymin: Number(coordinates[1]),
+                    xmax: Number(coordinates[2]),
+                    ymax: Number(coordinates[3]),
+                    spatialReference: SpatialReference.WebMercator
+                });
+            });
+
+            //
+            $('#buttonHelp').click(function () {
+                $('#modalHelp').modal('show');
+            });
+            $('#buttonAbout').click(function () {
+                $('#modalAbout').modal('show');
+            });
+
+            function addLens() {
+                $('#lens-container').append(
+                    $(document.createElement('div')).addClass('rc-window').css({
+                        left: '100px',
+                        top: '100px'
+                    }).touch({
+                        touchClass: 'rc-touching'
+                    })
+                );
+            }
         });
     });
-});

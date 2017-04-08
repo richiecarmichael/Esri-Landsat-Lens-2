@@ -52,7 +52,7 @@
         this.origin = {};
 
         //
-        $(this.element).on('touchstart', this.touchstart.bind(this));
+        $(this.element).on('touchstart.touch', this.touchstart.bind(this));
         $(this.element).on('touchmove.touch', this.touchmove.bind(this));
         $(this.element).on('touchend.touch touchcancel.touch', this.touchend.bind(this));
     }
@@ -138,7 +138,6 @@
             }
             hand1x /= count;
             hand1y /= count;
-            //console.log("1:" + hand1x + " " + hand1y);
             
             // Find center of current hand 
             var hand2x =0;
@@ -150,7 +149,6 @@
             }
             hand2x /= count;
             hand2y /= count;
-            //console.log("2: " + hand2x + " " + hand2y);
             
             // Set angle to center
             for (var i = 0; i < count; i++) {
@@ -258,7 +256,6 @@
         this.s *= this.ds;
     };
     
-    // plugin wrapper
     $.fn.touch = function (options) {
         return this.each(function () {
             if (!$.data(this, "plugin_touch")) {
@@ -266,4 +263,14 @@
             }
         });
     };
+
+    $.fn.untouch = function () {
+        return this.each(function () {
+            if ($.data(this, "plugin_touch")) {
+                $.removeData(this, 'plugin_touch');
+            }
+            $(this).off('.touch');
+        });
+    };
+
 }(jQuery));

@@ -16,10 +16,13 @@
 --------------------------------------------------------------- */
 
 (function ($) {
+    // Enforce strict mode
     'use strict';
     
     var defaults = {
-        touchClass: 'touching'
+        touchClass: 'touching',
+        touchMove: null,
+        touchEnd: null
     };
     
     //
@@ -67,7 +70,7 @@
         // Store originating touch positions.
         for (var i = 0; i < e.touches.length; i++) {
             var touch = e.touches.item(i);
-            if (touch.target.id === $(this.element).attr('id')) {
+            if (touch.target === this.element) {
                 if (touch.identifier in this.origin) {
                     // Finger already tracked
                 }
@@ -97,7 +100,7 @@
         var touches = [];
         for (var i = 0; i < e.touches.length; i++) {
             var touch = e.touches.item(i);
-            if (touch.target.id === $(this.element).attr('id')) {
+            if (touch.target === this.element) {
                 touches[touch.identifier] = {
                     x: touch.pageX,
                     y: touch.pageY
@@ -227,6 +230,11 @@
             'OTransform': transform,
             'transform': transform,
         });
+        
+//        //
+//        if (this.options.moved){
+//            this.options.moved();      
+//        }
     };
 
     Touch.prototype.touchend = function (e) {
@@ -237,7 +245,7 @@
         var fingerCount = 0;
         for (var i = 0; i < e.touches.length; i++) {
             var touch = e.touches.item(i);
-            if (touch.target.id === $(this.element).attr('id')) {
+            if (touch.target === this.element) {
                 fingerCount++;
             }
         }
@@ -254,6 +262,16 @@
         this.y += this.dy;
         this.r = (this.r + this.dr) % 360;
         this.s *= this.ds;
+        
+        //
+        if (this.options.touchEnd){
+            this.options.touchEnd({
+                x: this.x,
+                y: this.y,
+                r: this.r,
+                s: this.s
+            });
+        }
     };
     
     $.fn.touch = function (options) {
@@ -272,5 +290,11 @@
             $(this).off('.touch');
         });
     };
-
+    
+//    $.fn.touch2 = function (options) {
+//        return this.each(function () {
+//            if (!$.data(this, "plugin_touch")) { return; }
+//            
+//        });
+//    };
 }(jQuery));

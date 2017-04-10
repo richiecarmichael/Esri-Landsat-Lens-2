@@ -39,6 +39,7 @@ html, body {
     bottom: 0;
 }
 
+/*
 #lens-container {
     position: absolute;
     top: 0;
@@ -47,6 +48,7 @@ html, body {
     bottom: 0;
     pointer-events:none;
 }
+*/
 
 #map {
     position: absolute;
@@ -98,10 +100,11 @@ html, body {
 .rc-window {
     position: absolute;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
+    left: 0;
+    top: 0;
     width: 200px;
     height: 200px;
     background: white;
-    pointer-events: all;
 }
 
 .rc-touching {

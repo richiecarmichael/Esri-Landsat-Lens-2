@@ -91,15 +91,10 @@ require([
                 addLens();
             });
 
-            ////
-            //_view.ui.add(new Search({ view: _view }), "top-right");
-            _view.ui.add(new ScaleBar({ view: _view }), "bottom-right");
+            //
+            _view.ui.add(new ScaleBar({ view: _view }), "bottom-left");
 
-            //$('.rc-touching').touch({
-            //    touchClass: 'rc-touching'
-            //});
-            //var coordinates = $('#bookmarks li a').get(7).attr('data-extent').split(',');
-
+            // 
             $('#bookmarks li a').click(function () {
                 var coordinates = $(this).attr('data-extent').split(',');
                 _view.extent = new Extent({
@@ -119,13 +114,23 @@ require([
                 $('#modalAbout').modal('show');
             });
 
+            function touchMove(e){
+                var x = '';
+            }
+            
+            function touchEnd(e){
+                var x = '';
+            }
+            
             function addLens() {
-                $('#lens-container').append(
+                $('#map-container').append(
                     $(document.createElement('div')).addClass('rc-window').css({
-                        left: '100px',
-                        top: '100px'
+                        left: '0',
+                        top: '0'
                     }).touch({
-                        touchClass: 'rc-touching'
+                        touchClass: 'rc-touching',
+                        touchMove: touchMove,
+                        touchEnd: touchEnd
                     })
                 );
             }

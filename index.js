@@ -118,14 +118,6 @@ require([
                 $('#modalAbout').modal('show');
             });
 
-            function touchMove(e) {
-                var x = '';
-            }
-
-            function touchEnd(e) {
-                var x = '';
-            }
-
             function addLens(year) {
                 $('#map-container').append(
                     $(document.createElement('div')).addClass('rc-window').css({
@@ -135,37 +127,59 @@ require([
                         width: '400px',
                         height: '400px'
                     }).data('year', year).touch({
+                        canTranslate: true,
+                        canRotate: true,
+                        canScale: false,
                         touchClass: 'rc-touching',
                         touchMove: function (e) {
-                            $(this).children('.rc-window-image').css({
-                                'left': -e.x + 'px',
-                                'top': -e.y + 'px'
+                            var transform = string.substitute('translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)', {
+                                x: -e.x,
+                                y: -e.y,
+                                s: 1 / e.s,
+                                r: -e.r
+                            });
+                            var origin = string.substitute('${x}px ${y}px', {
+                                x: e.x + 200 * e.s,
+                                y: e.y + 200 * e.s
+                            });
+                            $(e.object).children('.rc-window-image').css({
+                                '-webkit-transform': transform,
+                                '-moz-transform': transform,
+                                '-ms-transform': transform,
+                                '-0-transform': transform,
+                                'transform': transform,
+                                '-webkit-transform-origin': origin,
+                                '-moz-transform-origin': origin,
+                                '-ms-transform-origin': origin,
+                                '-0-transform-origin': origin,
+                                'transform-origin': origin
                             });
                         },
-                        touchEnd: touchEnd
+                        touchEnd: function (e) {
+                            //
+                        }
                     }).append(
                         $(document.createElement('div')).addClass('rc-window-image').css({
                             'position': 'absolute',
                             'left': '0',
                             'top': '0',
-                            'width': '400px',
-                            'height': '400px',
-                            'pointer-events': 'none'
-                        }),
-                        $(document.createElement('div')).css({
-                            'position': 'absolute',
-                            'left': '0',
-                            'top': '0',
                             'width': _view.width + 'px',
                             'height': _view.height + 'px',
-                            'font-size': '18px',
                             'pointer-events': 'none',
-                            'color': 'rgba(255, 255, 255, 0.5)',
                             'background-size': 'cover',
                             'background-repeat': 'no-repeat',
                             'background-image': function () {
                                 return 'url("' + getImageUrl(year) + '")';
                             }
+                        }),
+                        $(document.createElement('div')).css({
+                            'position': 'absolute',
+                            'left': '0',
+                            'top': '0',
+                            'font-size': '18px',
+                            'font-weight': 700,
+                            'pointer-events': 'none',
+                            'color': 'rgba(255, 255, 255, 0.5)'
                         }).html(year)
                     )
                 );
@@ -199,7 +213,6 @@ require([
                     rasterFunction: fxn
                 });
                 return url;
-                //return 'url("' + url + '")';
             }
 
             // Ag

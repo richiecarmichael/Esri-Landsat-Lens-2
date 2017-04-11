@@ -231,10 +231,15 @@
             'transform': transform,
         });
         
-//        //
-//        if (this.options.moved){
-//            this.options.moved();      
-//        }
+        //
+        if (this.options.touchMove) {
+            this.options.touchMove({
+                x: this.x,
+                y: this.y,
+                r: this.r,
+                s: this.s
+            });
+        }
     };
 
     Touch.prototype.touchend = function (e) {

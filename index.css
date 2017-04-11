@@ -58,12 +58,19 @@ html, body {
     bottom: 0;
 }
 
+#test {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 #title {
     color: #777;
     font-size: 30px;
     font-weight: 400;
     display: inline-block;
-    /*margin-left: 15px;*/
     margin-top: 5px;
 }
 
@@ -98,13 +105,9 @@ html, body {
 }
 
 .rc-window {
-    position: absolute;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
-    left: 0;
-    top: 0;
-    width: 200px;
-    height: 200px;
     background: white;
+    overflow: hidden;
 }
 
 .rc-touching {

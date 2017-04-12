@@ -46,6 +46,8 @@ require([
             // Enforce strict mode
             'use strict';
 
+            var SIZE = 400;
+
             //
             var palms1 = $('.rc-bookmark li a').get(7);
             var palms2 = $(palms1).attr('data-extent').split(',');
@@ -76,7 +78,7 @@ require([
                 })
             });
             _view.then(function () {
-                addLens(2016);
+                addLens(2017);
             });
 
             //
@@ -119,19 +121,24 @@ require([
             });
 
             function addLens(year) {
+                var left = _view.width / 2 - SIZE / 2;
+                var top = _view.height / 2 - SIZE / 2;
+
                 $('#map-container').append(
                     $(document.createElement('div')).addClass('rc-window').css({
-                        position: 'absolute',
-                        left: '0',
-                        top: '0',
-                        width: '400px',
-                        height: '400px'
+                        'position': 'absolute',
+                        'left': left + 'px',
+                        'top': top + 'px',
+                        'width': SIZE + 'px',
+                        'height': SIZE + 'px'
                     }).data('year', year).touch({
-                        canTranslate: true,
-                        canRotate: true,
-                        canScale: false,
-                        touchClass: 'rc-touching',
-                        touchMove: function (e) {
+                        'canTranslate': true,
+                        'canRotate': true,
+                        'canScale': false,
+                        'touchClass': 'rc-touching',
+                        'touchMove': function (e) {
+                            //var x = $(e.object).position().left;
+                            //var y = $(e.object).position().top;
                             var transform = string.substitute('translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)', {
                                 x: -e.x,
                                 y: -e.y,
@@ -139,8 +146,8 @@ require([
                                 r: -e.r
                             });
                             var origin = string.substitute('${x}px ${y}px', {
-                                x: e.x + 200 * e.s,
-                                y: e.y + 200 * e.s
+                                x: e.x + SIZE / 2 * e.s,
+                                y: e.y + SIZE / 2 * e.s
                             });
                             $(e.object).children('.rc-window-image').css({
                                 '-webkit-transform': transform,
@@ -155,14 +162,16 @@ require([
                                 'transform-origin': origin
                             });
                         },
-                        touchEnd: function (e) {
+                        'touchEnd': function (e) {
                             //
                         }
                     }).append(
                         $(document.createElement('div')).addClass('rc-window-image').css({
                             'position': 'absolute',
-                            'left': '0',
-                            'top': '0',
+                            //'left': '0',
+                            //'top': '0',
+                            'left': -left + 'px',
+                            'top': -top + 'px',
                             'width': _view.width + 'px',
                             'height': _view.height + 'px',
                             'pointer-events': 'none',
@@ -176,10 +185,12 @@ require([
                             'position': 'absolute',
                             'left': '0',
                             'top': '0',
-                            'font-size': '18px',
+                            'font-size': '24px',
                             'font-weight': 700,
                             'pointer-events': 'none',
-                            'color': 'rgba(255, 255, 255, 0.5)'
+                            'color': 'rgba(255, 255, 255, 0.5)',
+                            'margin-top': '1px',
+                            'margin-left': '5px'
                         }).html(year)
                     )
                 );
@@ -189,6 +200,7 @@ require([
             function getImageUrl(year) {
                 var url = $('.rc-theme li.active a').attr('data-url');
                 var fxn = $('.rc-theme li.active a').attr('data-function');
+                var date = 
                 url += '/exportImage?f=image'
                 url += string.substitute('&bbox=${xmin},${ymin},${xmax},${ymax}', {
                     xmin: _view.extent.xmin,
@@ -198,84 +210,21 @@ require([
                 });
                 url += '&bboxSR=' + _view.spatialReference.wkid;
                 url += '&imageSR=' + _view.spatialReference.wkid;
-                url += string.substitute('&size=${width},${height}', {
-                    width: _view.width,
-                    height: _view.height
+                url += string.substitute('&size=${w},${h}', {
+                    w: _view.width,
+                    h: _view.height
                 });
-                url += string.substitute('&time=${from},${to}', {
-                    from: 0,
-                    to: 1491867353597
+                url += string.substitute('&time=${f},${t}', {
+                    f: 0,
+                    t: Date.UTC(year, 0, 1) // 1491867353597
                 });
                 url += '&format=' + 'jpgpng';
                 url += '&interpolation=' + 'RSP_BilinearInterpolation';
-                url += '&mosaicRule=' + '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\'}';
+                url += '&mosaicRule=' + '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=0.1\'}';
                 url += '&renderingRule=' + string.substitute('{rasterFunction:\'${rasterFunction}\'}', {
                     rasterFunction: fxn
                 });
                 return url;
             }
-
-            // Ag
-            // https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer/exportImage?f=image&format=jpgpng&renderingRule={"rasterFunction":"Agriculture with DRA"}&bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176&imageSR=102100&bboxSR=102100&size=1815,924
-
-            // Color Infrared
-            // https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer/exportImage?f=image&format=jpgpng&bandIds=&renderingRule={"rasterFunction":"Color Infrared with DRA"}&bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176&imageSR=102100&bboxSR=102100&size=1815,924
-
-            // Natural View
-            // http://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer/exportImage
-            // ?bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176
-            // &bboxSR=102100
-            // &size=1815,924
-            // &imageSR=102100
-            // &time=28800000,1491867353597
-            // &format=jpgpng
-            // &pixelType=U16
-            // &noData=
-            // &noDataInterpretation=esriNoDataMatchAny
-            // &interpolation= RSP_BilinearInterpolation
-            // &compression=
-            // &compressionQuality=
-            // &bandIds=
-            // &mosaicRule={
-            //    "mosaicMethod":"esriMosaicAttribute",
-            //    "sortField":"AcquisitionDate",
-            //    "sortValue":"2017/02/06, 12:00 AM",
-            //    "ascending":true,
-            //    "mosaicOperation":"MT_FIRST"
-            // }
-            // &renderingRule={"rasterFunction":"Pansharpened Enhanced with DRA"}
-            // &f=html
-
-            // https://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer/query?f=json&where=(Category=1)AND(CloudCover<=0.10)&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry={"xmin":-13061921.602459125,"ymin":4031126.215593787,"xmax":-13044579.951666951,"ymax":4039954.692360713,"spatialReference":{"wkid":102100}}&geometryType=esriGeometryEnvelope&inSR=102100&outFields=AcquisitionDate,GroupName,Best,CloudCover,WRS_Row,Month,Name&orderByFields=AcquisitionDate&outSR=102100&wab_dv=6.5
-            // https://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer/query
-            // ?f = json
-            // &where=(Category=1)AND(CloudCover<=0.10)
-            // &returnGeometry=true
-            // &spatialRel=esriSpatialRelIntersects
-            // &geometry={"xmin":-13061921.602459125,"ymin":4031126.215593787,"xmax":-13044579.951666951, "ymax":4039954.692360713, "spatialReference":{ "wkid":102100 } }
-            // &geometryType=esriGeometryEnvelope
-            // &inSR=102100
-            // &outFields=AcquisitionDate,GroupName,Best,CloudCover,WRS_Row,Month,Name
-            // &orderByFields=AcquisitionDate
-            // &outSR=102100
-            // &wab_dv=6.5
-            // http://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer/exportImage?f=image&format=jpgpng&renderingRule={"rasterFunction":"Pansharpened Enhanced with DRA"}&bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176&imageSR=102100&bboxSR=102100&size=1815,924&mosaicRule={"mosaicMethod":"esriMosaicLockRaster","ascending":true,"lockRasterIds":[77113],"mosaicOperation":"MT_FIRST"}
-            // http://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer/exportImage
-            // ?f=image
-            // &format=jpgpng
-            // &renderingRule={"rasterFunction":"Pansharpened Enhanced with DRA"}
-            // &bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176
-            // &imageSR=102100
-            // &bboxSR=102100
-            // &size=1815,924
-            // &mosaicRule={"mosaicMethod":"esriMosaicLockRaster","ascending":true,"lockRasterIds":[77113],"mosaicOperation":"MT_FIRST"}
-
-            // https://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer/exportImage?f=image&format=jpgpng&renderingRule={"rasterFunction":"Pansharpened Enhanced with DRA"}&bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176&imageSR=102100&bboxSR=102100&size=1815,924
-
-            // Moisure
-            // https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer/exportImage?f=image&format=jpgpng&bandIds=&renderingRule={"rasterFunction":"Normalized Difference Moisture Index Colorized"}&bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176&imageSR=102100&bboxSR=102100&size=1815,924
-
-            // Vege
-            // https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer/exportImage?f=image&format=jpgpng&bandIds=&renderingRule={"rasterFunction":"NDVI Colorized"}&bbox=-13070592.427855214,4026711.9772103243,-13035909.126270862,4044368.930744176&imageSR=102100&bboxSR=102100&size=1815,924
         });
     });

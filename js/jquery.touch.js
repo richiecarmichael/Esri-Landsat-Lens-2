@@ -18,16 +18,16 @@
 (function ($) {
     // Enforce strict mode
     'use strict';
-    
+
     var defaults = {
         canTranslate: true,
-        canScale:true,
-        canRotate:true,
+        canScale: true,
+        canRotate: true,
         touchClass: 'touching',
         touchMove: null,
         touchEnd: null
     };
-    
+
     //
     var props = $.event.props || [];
     props.push('touches');
@@ -53,7 +53,7 @@
 
         //
         this.options = $.extend({}, defaults, options);
-        
+
         //
         this.origin = {};
 
@@ -61,15 +61,92 @@
         $(this.element).on('touchstart.touch', this.touchstart.bind(this));
         $(this.element).on('touchmove.touch', this.touchmove.bind(this));
         $(this.element).on('touchend.touch touchcancel.touch', this.touchend.bind(this));
+        $(this.element).on('mousedown.touch', this.mousestart.bind(this));
+        $(this.element).on('mousemove.touch', this.mousemove.bind(this));
+        $(this.element).on('mouseup.touch', this.mouseend.bind(this));
     }
 
-    // Static property to store the zIndex for an element
-    Touch.zIndexCount = 1;
+    Touch.prototype.mousestart = function (e) {
+        this.origin['mouse'] = {
+            x: e.pageX,
+            y: e.pageY
+        }
+
+        // Add touching class.
+        $(this.element).addClass(this.options.touchClass);
+    }
+
+    Touch.prototype.mousemove = function (e) {
+        if (!this.origin['mouse']) {
+            return;
+        }
+
+        this.dx = 0;
+        this.dy = 0;
+        if (this.options.canTranslate) {
+            this.dx = e.pageX - this.origin['mouse'].x;
+            this.dy = e.pageY - this.origin['mouse'].y;
+        }
+
+        var x = this.x + this.dx;
+        var y = this.y + this.dy;
+        var r = (this.r + this.dr) % 360;
+        var s = this.s * this.ds;
+        var transform =
+            'translate(' + x + 'px,' + y + 'px) ' +
+            'scale(' + s + ') ' +
+            'rotate(' + r + 'deg)';
+
+        // Apply transformation.
+        $(this.element).css({
+            '-webkit-transform': transform,
+            '-moz-transform': transform,
+            '-ms-transform': transform,
+            '-0-transform': transform,
+            'transform': transform
+        });
+
+        //
+        if (this.options.touchMove) {
+            this.options.touchMove({
+                object: this.element,
+                x: x,
+                y: y,
+                r: r,
+                s: s
+            });
+        }
+    }
+
+    Touch.prototype.mouseend = function (e) {
+        // Clear origin
+        this.origin = {};
+
+        // Stop listening to touch events. Remove touching class.
+        $(this.element).removeClass(this.options.touchClass);
+
+        // Store last used transformation parameters.
+        this.x += this.dx;
+        this.y += this.dy;
+        this.r = (this.r + this.dr) % 360;
+        this.s *= this.ds;
+
+        //
+        if (this.options.touchEnd) {
+            this.options.touchEnd({
+                x: this.x,
+                y: this.y,
+                r: this.r,
+                s: this.s
+            });
+        }
+    }
+
 
     Touch.prototype.touchstart = function (e) {
         // Prevent event bubbling.
         e.preventDefault();
-        
+
         // Store originating touch positions.
         for (var i = 0; i < e.touches.length; i++) {
             var touch = e.touches.item(i);
@@ -85,11 +162,6 @@
                 }
             }
         }
-
-        // Force element to top.
-        $(this.element).css({
-            'zIndex': Touch.zIndexCount++
-        });
 
         // Add touching class.
         $(this.element).addClass(this.options.touchClass);
@@ -123,11 +195,11 @@
         // Calculate translation deltas.
         this.dx = 0;
         this.dy = 0;
-        if (this.options.canTranslate){
+        if (this.options.canTranslate) {
             for (var i = 0; i < count; i++) {
                 var id = fingers1[i];
                 this.dx += touches[id].x - this.origin[id].x
-                this.dy += touches[id].y - this.origin[id].y 
+                this.dy += touches[id].y - this.origin[id].y
             }
             this.dx /= fingers1.length;
             this.dy /= fingers1.length;
@@ -135,11 +207,11 @@
 
         // Calculate rotation deltas.
         this.dr = 0;
-        if (this.options.canRotate){
+        if (this.options.canRotate) {
             if (count > 1) {
                 // Find center of original hand 
-                var hand1x =0;
-                var hand1y =0;
+                var hand1x = 0;
+                var hand1y = 0;
                 for (var i = 0; i < count; i++) {
                     var id = fingers1[i];
                     hand1x += this.origin[id].x;
@@ -149,8 +221,8 @@
                 hand1y /= count;
 
                 // Find center of current hand 
-                var hand2x =0;
-                var hand2y =0;
+                var hand2x = 0;
+                var hand2y = 0;
                 for (var i = 0; i < count; i++) {
                     var id = fingers2[i];
                     hand2x += touches[id].x;
@@ -177,10 +249,10 @@
             this.dr *= 180 / Math.PI;
             this.dr /= count;
         }
-        
+
         // Calculate scale deltas.
         this.ds = 1;
-        if (this.options.canScale){
+        if (this.options.canScale) {
             if (touches.length > 1) {
                 this.ds = 0;
 
@@ -239,7 +311,7 @@
             '-0-transform': transform,
             'transform': transform
         });
-        
+
         //
         if (this.options.touchMove) {
             this.options.touchMove({
@@ -277,9 +349,9 @@
         this.y += this.dy;
         this.r = (this.r + this.dr) % 360;
         this.s *= this.ds;
-        
+
         //
-        if (this.options.touchEnd){
+        if (this.options.touchEnd) {
             this.options.touchEnd({
                 x: this.x,
                 y: this.y,
@@ -288,7 +360,7 @@
             });
         }
     };
-    
+
     $.fn.touch = function (options) {
         return this.each(function () {
             if (!$.data(this, "plugin_touch")) {

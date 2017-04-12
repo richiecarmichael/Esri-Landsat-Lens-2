@@ -97,8 +97,10 @@ html, body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
     background: white;
     overflow: hidden;
+    cursor: grab;
 }
 
 .rc-touching {
     opacity: 0.8;
+    cursor: grabbing;
 }

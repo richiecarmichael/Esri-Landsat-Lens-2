@@ -145,9 +145,11 @@ require([
                                 s: 1 / e.s,
                                 r: -e.r
                             });
+                            var position = $(e.object).position();
+                            
                             var origin = string.substitute('${x}px ${y}px', {
-                                x: e.x + SIZE / 2 * e.s,
-                                y: e.y + SIZE / 2 * e.s
+                                x: _view.width / 2 + e.x,
+                                y: _view.height / 2 + e.y
                             });
                             $(e.object).children('.rc-window-image').css({
                                 '-webkit-transform': transform,
@@ -217,7 +219,7 @@ require([
                 });
                 url += '&format=' + 'jpgpng';
                 url += '&interpolation=' + 'RSP_BilinearInterpolation';
-                url += '&mosaicRule=' + '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=0.1\'}';
+                url += '&mosaicRule=' +         '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=0.1\'}';
                 url += '&renderingRule=' + string.substitute('{rasterFunction:\'${rasterFunction}\'}', {
                     rasterFunction: fxn
                 });

@@ -16,19 +16,19 @@
 --------------------------------------------------------------- */
 
 require([
-    'esri/Map',
-    'esri/geometry/Extent',
-    'esri/geometry/SpatialReference',
-    'esri/geometry/Point',
-    'esri/geometry/ScreenPoint',
-    'esri/views/MapView',
-    'esri/widgets/Home',
-    'esri/widgets/Search',
-    'esri/widgets/ScaleBar',
-    'dojo/number',
-    'dojo/string',
-    'dojo/domReady!'
-],
+        'esri/Map',
+        'esri/geometry/Extent',
+        'esri/geometry/SpatialReference',
+        'esri/geometry/Point',
+        'esri/geometry/ScreenPoint',
+        'esri/views/MapView',
+        'esri/widgets/Home',
+        'esri/widgets/Search',
+        'esri/widgets/ScaleBar',
+        'dojo/number',
+        'dojo/string',
+        'dojo/domReady!'
+    ],
     function (
         Map,
         Extent,
@@ -131,14 +131,14 @@ require([
                         'top': top + 'px',
                         'width': SIZE + 'px',
                         'height': SIZE + 'px'
-                    }).data('year', year).touch({
+                    }).data({
+                        'year': year
+                    }).touch({
                         'canTranslate': true,
                         'canRotate': true,
-                        'canScale': false,
+                        'canScale': true,
                         'touchClass': 'rc-touching',
                         'touchMove': function (e) {
-                            //var x = $(e.object).position().left;
-                            //var y = $(e.object).position().top;
                             var transform = string.substitute('translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)', {
                                 x: -e.x,
                                 y: -e.y,
@@ -168,8 +168,6 @@ require([
                     }).append(
                         $(document.createElement('div')).addClass('rc-window-image').css({
                             'position': 'absolute',
-                            //'left': '0',
-                            //'top': '0',
                             'left': -left + 'px',
                             'top': -top + 'px',
                             'width': _view.width + 'px',
@@ -194,14 +192,13 @@ require([
                         }).html(year)
                     )
                 );
-                
             }
 
             function getImageUrl(year) {
                 var url = $('.rc-theme li.active a').attr('data-url');
                 var fxn = $('.rc-theme li.active a').attr('data-function');
-                var date = 
-                url += '/exportImage?f=image'
+                var date =
+                    url += '/exportImage?f=image'
                 url += string.substitute('&bbox=${xmin},${ymin},${xmax},${ymax}', {
                     xmin: _view.extent.xmin,
                     ymin: _view.extent.ymin,
@@ -216,7 +213,7 @@ require([
                 });
                 url += string.substitute('&time=${f},${t}', {
                     f: 0,
-                    t: Date.UTC(year, 0, 1) // 1491867353597
+                    t: Date.UTC(year, 0, 1)
                 });
                 url += '&format=' + 'jpgpng';
                 url += '&interpolation=' + 'RSP_BilinearInterpolation';
@@ -227,4 +224,5 @@ require([
                 return url;
             }
         });
-    });
+    }
+);

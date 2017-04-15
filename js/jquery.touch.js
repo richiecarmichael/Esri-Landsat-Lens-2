@@ -64,6 +64,23 @@
         $(this.element).on('mousedown.touch', this.mousestart.bind(this));
         $(this.element).on('mousemove.touch', this.mousemove.bind(this));
         $(this.element).on('mouseup.touch', this.mouseend.bind(this));
+        $(this.element).on('mousewheel.touch', this.mousewheel.bind(this));
+    }
+
+    Touch.prototype.mousewheel = function (e) {
+        //
+        if (this.options.canScale) {
+            // Prepare transformation description.
+            this.s *= (1 + e.deltaY * 0.01);
+
+            //
+            this.applyTransform(
+                this.x,
+                this.y,
+                this.r,
+                this.s
+            );
+        }
     }
 
     Touch.prototype.mousestart = function (e) {
@@ -77,45 +94,25 @@
     }
 
     Touch.prototype.mousemove = function (e) {
-        if (!this.origin['mouse']) {
-            return;
-        }
+        // Exit if no mouse origin.
+        if (!this.origin['mouse']) { return; }
 
+        // Exit if translation not supported.
         this.dx = 0;
         this.dy = 0;
         if (this.options.canTranslate) {
+            //
             this.dx = e.pageX - this.origin['mouse'].x;
             this.dy = e.pageY - this.origin['mouse'].y;
         }
 
-        var x = this.x + this.dx;
-        var y = this.y + this.dy;
-        var r = (this.r + this.dr) % 360;
-        var s = this.s * this.ds;
-        var transform =
-            'translate(' + x + 'px,' + y + 'px) ' +
-            'scale(' + s + ') ' +
-            'rotate(' + r + 'deg)';
-
-        // Apply transformation.
-        $(this.element).css({
-            '-webkit-transform': transform,
-            '-moz-transform': transform,
-            '-ms-transform': transform,
-            '-0-transform': transform,
-            'transform': transform
-        });
-
         //
-        if (this.options.touchMove) {
-            this.options.touchMove({
-                object: this.element,
-                x: x,
-                y: y,
-                r: r,
-                s: s
-            });
-        }
+        this.applyTransform(
+            this.x + this.dx,
+            this.y + this.dy,
+            this.r,
+            this.s
+        );
     }
 
     Touch.prototype.mouseend = function (e) {
@@ -125,13 +122,13 @@
         // Stop listening to touch events. Remove touching class.
         $(this.element).removeClass(this.options.touchClass);
 
-        // Store last used transformation parameters.
-        this.x += this.dx;
-        this.y += this.dy;
-        this.r = (this.r + this.dr) % 360;
-        this.s *= this.ds;
+        // Exit if translation not supported.
+        if (this.options.canTranslate) {
+            //
+            this.x += this.dx;
+            this.y += this.dy;
+        }
 
-        //
         if (this.options.touchEnd) {
             this.options.touchEnd({
                 x: this.x,
@@ -141,7 +138,6 @@
             });
         }
     }
-
 
     Touch.prototype.touchstart = function (e) {
         // Prevent event bubbling.
@@ -293,35 +289,13 @@
             }
         }
 
-        // Prepare transformation description.
-        var x = this.x + this.dx;
-        var y = this.y + this.dy;
-        var r = (this.r + this.dr) % 360;
-        var s = this.s * this.ds;
-        var transform =
-            'translate(' + x + 'px,' + y + 'px) ' +
-            'scale(' + s + ') ' +
-            'rotate(' + r + 'deg)';
-
-        // Apply transformation.
-        $(this.element).css({
-            '-webkit-transform': transform,
-            '-moz-transform': transform,
-            '-ms-transform': transform,
-            '-0-transform': transform,
-            'transform': transform
-        });
-
         //
-        if (this.options.touchMove) {
-            this.options.touchMove({
-                object: this.element,
-                x: x,
-                y: y,
-                r: r,
-                s: s
-            });
-        }
+        this.applyTransform(
+            this.x + this.dx,
+            this.y + this.dy,
+            (this.r + this.dr) % 360,
+            this.s * this.ds
+        );
     };
 
     Touch.prototype.touchend = function (e) {
@@ -360,6 +334,32 @@
             });
         }
     };
+
+    Touch.prototype.applyTransform = function (x, y, r, s) {
+        var transform =
+            'translate(' + x + 'px,' + y + 'px) ' +
+            'scale(' + s + ') ' +
+            'rotate(' + r + 'deg)';
+
+        // Apply transformation.
+        $(this.element).css({
+            '-webkit-transform': transform,
+            '-moz-transform': transform,
+            '-ms-transform': transform,
+            '-0-transform': transform,
+            'transform': transform
+        });
+
+        if (this.options.touchMove) {
+            this.options.touchMove({
+                object: this.element,
+                x: x,
+                y: y,
+                r: r,
+                s: s
+            });
+        }
+    }
 
     $.fn.touch = function (options) {
         return this.each(function () {

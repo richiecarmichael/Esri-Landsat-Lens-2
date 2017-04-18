@@ -22,12 +22,7 @@ require([
         'esri/geometry/Point',
         'esri/geometry/ScreenPoint',
         'esri/views/MapView',
-        'esri/widgets/Home',
-        'esri/widgets/Search',
         'esri/widgets/ScaleBar',
-        //'dojo/on',
-        //'dojo/debounce',
-        'dojo/number',
         'dojo/string',
         'dojo/domReady!'
     ],
@@ -38,23 +33,18 @@ require([
         Point,
         ScreenPoint,
         MapView,
-        Home,
-        Search,
         ScaleBar,
-        //on,
-        //debounce,
-        number,
         string
     ) {
         $(document).ready(function () {
             // Enforce strict mode
             'use strict';
 
-            var DEFAULT_SIZE = 400;
+            var DEFAULT_SIZE = 300;
             var DEFAULT_YEAR = 2017;
             var MAX_IMAGE = 2000;
 
-            //
+            // Get extent of the Palms in Dubai
             var palms1 = $('.rc-bookmark li a').get(7);
             var palms2 = $(palms1).attr('data-extent').split(',');
 
@@ -90,19 +80,13 @@ require([
                 );
             });
 
-            _view.on('resize', $.debounce(1000, function (e) {
-                updateLensImages();
+            //var navigating = false;
+            _view.watch('extent', $.debounce(250, true, function (e) {
+                clearLensImages();
             }));
-
-            //on(_view, 'resize', debounce(function (e) {
-            //    updateLensImages();
-            //}, 1000));
-
             _view.watch('extent', $.debounce(250, function (e) {
                 updateLensImages();
             }));
-
-
 
             //
             _view.ui.add(new ScaleBar({ view: _view }), "bottom-left");
@@ -110,6 +94,7 @@ require([
             // 
             $('.dropdown-menu li a').click(function () {
                 if ($(this).parent().parent().hasClass('rc-bookmark')) {
+                    // Zoom to user defined spatial bookmark.
                     var coordinates = $(this).attr('data-extent').split(',');
                     _view.extent = new Extent({
                         xmin: Number(coordinates[0]),
@@ -118,6 +103,10 @@ require([
                         ymax: Number(coordinates[3]),
                         spatialReference: SpatialReference.WebMercator
                     });
+
+                    // Update map lens image.
+                    clearLensImages();
+                    updateLensImages();
                 }
 
                 if ($(this).parent().parent().hasClass('rc-theme')) {
@@ -127,12 +116,16 @@ require([
                     // Toggle enabled state for clicked item and siblings.
                     $(this).parent().addClass('active').siblings().removeClass('active');
 
-                    //
+                    // Update map lens image.
+                    clearLensImages();
+                    updateLensImages();
                 }
 
                 if ($(this).parent().parent().hasClass('rc-year')) {
-                    // Add Lens
+                    // Get year.
                     var year = $(this).attr('data-year');
+
+                    // Add new lens.
                     addLens(
                         year,
                         DEFAULT_SIZE
@@ -140,7 +133,7 @@ require([
                 }
             });
 
-            //
+            // Display help and about dialogs.
             $('#buttonHelp').click(function () {
                 $('#modalHelp').modal('show');
             });
@@ -148,35 +141,37 @@ require([
                 $('#modalAbout').modal('show');
             });
 
+            // Function that adds a new lens.
             function addLens(year, size) {
+                // 
                 var left = _view.width / 2 - size / 2;
                 var top = _view.height / 2 - size / 2;
 
                 var window = $(document.createElement('div')).addClass('rc-window').css({
-                    'position': 'absolute',
-                    'left': left + 'px',
-                    'top': top + 'px',
-                    'width': size + 'px',
-                    'height': size + 'px'
+                    position: 'absolute',
+                    left: left + 'px',
+                    top: top + 'px',
+                    width: size + 'px',
+                    height: size + 'px'
                 }).data({
-                    'year': year
+                    year: year
                 });
 
                 window.touch({
-                    'canTranslate': true,
-                    'canRotate': true,
-                    'canScale': true,
-                    'touchStart': function (e) {
+                    canTranslate: true,
+                    canRotate: true,
+                    canScale: true,
+                    touchStart: function (e) {
                         // Bring lens to the front
                         $(e.object).bringToFont('.rc-window');
 
                         // 
                         $(e.object).css({
-                            'opacity': 0.7,
-                            'cursor': 'grabbing'
+                            opacity: 0.7,
+                            cursor: 'grabbing'
                         });
                     },
-                    'touchMove': function (e) {
+                    touchMove: function (e) {
                         // Create texture transformation
                         var transform = string.substitute('translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)', {
                             x: -e.x,
@@ -205,38 +200,38 @@ require([
                             'transform-origin': origin
                         });
                     },
-                    'touchEnd': function (e) {
+                    touchEnd: function (e) {
                         //
                         $(e.object).css({
-                            'opacity': 1,
-                            'cursor': 'grab'
+                            opacity: 1,
+                            cursor: 'grab'
                         });
                     }
                 });
 
-                // Add progress gif
+                // Add animated progress gif
                 window.append(
                     $(document.createElement('img'))
                         .attr('src', 'img/loading-throb.gif')
                         .css({
-                            'position': 'absolute',
-                            'left':  '50%',
-                            'top': '50%',
-                            'width': '33px',
+                            position: 'absolute',
+                            left:  '50%',
+                            top: '50%',
+                            width: '33px',
                             'margin-top': '-20px',
                             'margin-left': '-17px',
                             'pointer-events': 'none'
                         })
                 );
 
-
+                // Add background map texture
                 window.append(
                     $(document.createElement('div')).addClass('rc-window-image').css({
-                        'position': 'absolute',
-                        'left': -left + 'px',
-                        'top': -top + 'px',
-                        'width': _view.width + 'px',
-                        'height': _view.height + 'px',
+                        position: 'absolute',
+                        left: -left + 'px',
+                        top: -top + 'px',
+                        width: _view.width + 'px',
+                        height: _view.height + 'px',
                         'pointer-events': 'none',
                         'background-size': 'cover',
                         'background-repeat': 'no-repeat',
@@ -244,34 +239,41 @@ require([
                     })
                 );
 
+                // Add year text
                 window.append(
                     $(document.createElement('div')).css({
-                        'position': 'absolute',
-                        'left': '0',
-                        'top': '0',
+                        position: 'absolute',
+                        left: '0',
+                        top: '0',
+                        color: 'rgba(255, 255, 255, 0.5)',
                         'font-size': '24px',
                         'font-weight': 700,
                         'pointer-events': 'none',
-                        'color': 'rgba(255, 255, 255, 0.5)',
                         'margin-top': '1px',
                         'margin-left': '5px'
                     }).html(year)
                 );
 
+                // Add window to window container
                 $('#map-container').append(
                     window
                 );
 
+                // Update lens texture
+                clearLensImages();
                 updateLensImages();
             }
 
             function getImageUrl(year) {
-                // Calcuate scale if image exceeds maximum size.
+                // Calcuate scale (if image width or height exceeds maximum).
                 var max = Math.max(_view.width, _view.height);
                 var scale = max <= MAX_IMAGE ? 1 : MAX_IMAGE / max;
 
+                // Get url/function from user defined selection.
                 var url = $('.rc-theme li.active a').attr('data-url');
                 var fxn = $('.rc-theme li.active a').attr('data-function');
+
+                // Construct map request url.
                 var date =
                     url += '/exportImage?f=image'
                 url += string.substitute('&bbox=${xmin},${ymin},${xmax},${ymax}', {
@@ -299,15 +301,19 @@ require([
                 return url;
             }
 
+            function clearLensImages() {
+                $('.rc-window').each(function () {
+                    $(this).children('.rc-window-image').css({
+                        'background-image': 'none'
+                    });
+                });
+            }
             function updateLensImages() {
                 $('.rc-window').each(function () {
                     var year = $(this).data().year;
                     $(this).children('.rc-window-image').css({
-                        'background-image':'none'
-                    });
-                    $(this).children('.rc-window-image').css({
-                        'width': _view.width + 'px',
-                        'height': _view.height + 'px',
+                        width: _view.width + 'px',
+                        height: _view.height + 'px',
                         'background-image': function () {
                             return 'url("' + getImageUrl(year) + '")';
                         }

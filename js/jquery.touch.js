@@ -68,12 +68,12 @@
     }
 
     Touch.prototype.mousewheel = function (e) {
-        //
+        // If scale enabled then enlarge or reduce.
         if (this.options.canScale) {
             // Prepare transformation description.
             this.s *= (1 + e.deltaY * 0.01);
 
-            //
+            // Apply transformation.
             this.applyTransform(
                 this.x,
                 this.y,
@@ -84,11 +84,13 @@
     }
 
     Touch.prototype.mousestart = function (e) {
+        // Store mouse start position
         this.origin['mouse'] = {
             x: e.pageX,
             y: e.pageY
         }
 
+        // Invoke touch-start callback
         if (this.options.touchStart) {
             this.options.touchStart({
                 object: this.element
@@ -129,6 +131,7 @@
             this.y += this.dy;
         }
 
+        // Invoke touch-end callback.
         if (this.options.touchEnd) {
             this.options.touchEnd({
                 object: this.element,
@@ -319,7 +322,7 @@
         this.r = (this.r + this.dr) % 360;
         this.s *= this.ds;
 
-        //
+        // Invoke touch-end callback.
         if (this.options.touchEnd) {
             this.options.touchEnd({
                 object: this.element
@@ -328,6 +331,7 @@
     };
 
     Touch.prototype.applyTransform = function (x, y, r, s) {
+        // Build CSS tranform property.
         var transform =
             'translate(' + x + 'px,' + y + 'px) ' +
             'scale(' + s + ') ' +
@@ -342,6 +346,7 @@
             'transform': transform
         });
 
+        // Invoke touch-move callback.
         if (this.options.touchMove) {
             this.options.touchMove({
                 object: this.element,
@@ -353,17 +358,19 @@
         }
     }
 
+    // jQuery function to enable touch.
     $.fn.touch = function (options) {
         return this.each(function () {
-            if (!$.data(this, "plugin_touch")) {
+            if (!$.data(this, 'plugin_touch')) {
                 $.data(this, 'plugin_touch', new Touch(this, options));
             }
         });
     };
 
+    // jQuery function to disable touch.
     $.fn.untouch = function () {
         return this.each(function () {
-            if ($.data(this, "plugin_touch")) {
+            if ($.data(this, 'plugin_touch')) {
                 $.removeData(this, 'plugin_touch');
             }
             $(this).off('.touch');

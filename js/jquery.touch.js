@@ -23,7 +23,7 @@
         canTranslate: true,
         canScale: true,
         canRotate: true,
-        touchClass: 'touching',
+        touchStart: null,
         touchMove: null,
         touchEnd: null
     };
@@ -89,8 +89,11 @@
             y: e.pageY
         }
 
-        // Add touching class.
-        $(this.element).addClass(this.options.touchClass);
+        if (this.options.touchStart) {
+            this.options.touchStart({
+                object: this.element
+            });
+        }
     }
 
     Touch.prototype.mousemove = function (e) {
@@ -119,9 +122,6 @@
         // Clear origin
         this.origin = {};
 
-        // Stop listening to touch events. Remove touching class.
-        $(this.element).removeClass(this.options.touchClass);
-
         // Exit if translation not supported.
         if (this.options.canTranslate) {
             //
@@ -131,6 +131,7 @@
 
         if (this.options.touchEnd) {
             this.options.touchEnd({
+                object: this.element,
                 x: this.x,
                 y: this.y,
                 r: this.r,
@@ -158,9 +159,6 @@
                 }
             }
         }
-
-        // Add touching class.
-        $(this.element).addClass(this.options.touchClass);
     };
 
     Touch.prototype.touchmove = function (e) {
@@ -315,9 +313,6 @@
         // Clear origin
         this.origin = {};
 
-        // Stop listening to touch events. Remove touching class.
-        $(this.element).removeClass(this.options.touchClass);
-
         // Store last used transformation parameters.
         this.x += this.dx;
         this.y += this.dy;
@@ -327,10 +322,7 @@
         //
         if (this.options.touchEnd) {
             this.options.touchEnd({
-                x: this.x,
-                y: this.y,
-                r: this.r,
-                s: this.s
+                object: this.element
             });
         }
     };

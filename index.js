@@ -25,6 +25,8 @@ require([
         'esri/widgets/Home',
         'esri/widgets/Search',
         'esri/widgets/ScaleBar',
+        //'dojo/on',
+        //'dojo/debounce',
         'dojo/number',
         'dojo/string',
         'dojo/domReady!'
@@ -39,6 +41,8 @@ require([
         Home,
         Search,
         ScaleBar,
+        //on,
+        //debounce,
         number,
         string
     ) {
@@ -46,7 +50,9 @@ require([
             // Enforce strict mode
             'use strict';
 
-            var SIZE = 400;
+            var DEFAULT_SIZE = 400;
+            var DEFAULT_YEAR = 2017;
+            var MAX_IMAGE = 2000;
 
             //
             var palms1 = $('.rc-bookmark li a').get(7);
@@ -64,7 +70,7 @@ require([
                 }),
                 padding: {
                     left: 0,
-                    top: 50,
+                    top: 0,
                     right: 0,
                     bottom: 0
                 },
@@ -78,8 +84,25 @@ require([
                 })
             });
             _view.then(function () {
-                addLens(2017);
+                addLens(
+                    DEFAULT_YEAR,
+                    DEFAULT_SIZE
+                );
             });
+
+            _view.on('resize', $.debounce(1000, function (e) {
+                updateLensImages();
+            }));
+
+            //on(_view, 'resize', debounce(function (e) {
+            //    updateLensImages();
+            //}, 1000));
+
+            _view.watch('extent', $.debounce(250, function (e) {
+                updateLensImages();
+            }));
+
+
 
             //
             _view.ui.add(new ScaleBar({ view: _view }), "bottom-left");
@@ -109,6 +132,11 @@ require([
 
                 if ($(this).parent().parent().hasClass('rc-year')) {
                     // Add Lens
+                    var year = $(this).attr('data-year');
+                    addLens(
+                        year,
+                        DEFAULT_SIZE
+                    );
                 }
             });
 
@@ -120,83 +148,128 @@ require([
                 $('#modalAbout').modal('show');
             });
 
-            function addLens(year) {
-                var left = _view.width / 2 - SIZE / 2;
-                var top = _view.height / 2 - SIZE / 2;
+            function addLens(year, size) {
+                var left = _view.width / 2 - size / 2;
+                var top = _view.height / 2 - size / 2;
+
+                var window = $(document.createElement('div')).addClass('rc-window').css({
+                    'position': 'absolute',
+                    'left': left + 'px',
+                    'top': top + 'px',
+                    'width': size + 'px',
+                    'height': size + 'px'
+                }).data({
+                    'year': year
+                });
+
+                window.touch({
+                    'canTranslate': true,
+                    'canRotate': true,
+                    'canScale': true,
+                    'touchStart': function (e) {
+                        // Bring lens to the front
+                        $(e.object).bringToFont('.rc-window');
+
+                        // 
+                        $(e.object).css({
+                            'opacity': 0.7,
+                            'cursor': 'grabbing'
+                        });
+                    },
+                    'touchMove': function (e) {
+                        // Create texture transformation
+                        var transform = string.substitute('translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)', {
+                            x: -e.x,
+                            y: -e.y,
+                            s: 1 / e.s,
+                            r: -e.r
+                        });
+
+                        // Create texture transformation origin
+                        var origin = string.substitute('${x}px ${y}px', {
+                            x: _view.width / 2 + e.x,
+                            y: _view.height / 2 + e.y
+                        });
+
+                        // Apply transformation and transformation origin
+                        $(e.object).children('.rc-window-image').css({
+                            '-webkit-transform': transform,
+                            '-moz-transform': transform,
+                            '-ms-transform': transform,
+                            '-0-transform': transform,
+                            'transform': transform,
+                            '-webkit-transform-origin': origin,
+                            '-moz-transform-origin': origin,
+                            '-ms-transform-origin': origin,
+                            '-0-transform-origin': origin,
+                            'transform-origin': origin
+                        });
+                    },
+                    'touchEnd': function (e) {
+                        //
+                        $(e.object).css({
+                            'opacity': 1,
+                            'cursor': 'grab'
+                        });
+                    }
+                });
+
+                // Add progress gif
+                window.append(
+                    $(document.createElement('img'))
+                        .attr('src', 'img/loading-throb.gif')
+                        .css({
+                            'position': 'absolute',
+                            'left':  '50%',
+                            'top': '50%',
+                            'width': '33px',
+                            'margin-top': '-20px',
+                            'margin-left': '-17px',
+                            'pointer-events': 'none'
+                        })
+                );
+
+
+                window.append(
+                    $(document.createElement('div')).addClass('rc-window-image').css({
+                        'position': 'absolute',
+                        'left': -left + 'px',
+                        'top': -top + 'px',
+                        'width': _view.width + 'px',
+                        'height': _view.height + 'px',
+                        'pointer-events': 'none',
+                        'background-size': 'cover',
+                        'background-repeat': 'no-repeat',
+                        'background-image': 'none'
+                    })
+                );
+
+                window.append(
+                    $(document.createElement('div')).css({
+                        'position': 'absolute',
+                        'left': '0',
+                        'top': '0',
+                        'font-size': '24px',
+                        'font-weight': 700,
+                        'pointer-events': 'none',
+                        'color': 'rgba(255, 255, 255, 0.5)',
+                        'margin-top': '1px',
+                        'margin-left': '5px'
+                    }).html(year)
+                );
 
                 $('#map-container').append(
-                    $(document.createElement('div')).addClass('rc-window').css({
-                        'position': 'absolute',
-                        'left': left + 'px',
-                        'top': top + 'px',
-                        'width': SIZE + 'px',
-                        'height': SIZE + 'px'
-                    }).data({
-                        'year': year
-                    }).touch({
-                        'canTranslate': true,
-                        'canRotate': true,
-                        'canScale': true,
-                        'touchClass': 'rc-touching',
-                        'touchMove': function (e) {
-                            var transform = string.substitute('translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)', {
-                                x: -e.x,
-                                y: -e.y,
-                                s: 1 / e.s,
-                                r: -e.r
-                            });
-                            var position = $(e.object).position();
-                            
-                            var origin = string.substitute('${x}px ${y}px', {
-                                x: _view.width / 2 + e.x,
-                                y: _view.height / 2 + e.y
-                            });
-                            $(e.object).children('.rc-window-image').css({
-                                '-webkit-transform': transform,
-                                '-moz-transform': transform,
-                                '-ms-transform': transform,
-                                '-0-transform': transform,
-                                'transform': transform,
-                                '-webkit-transform-origin': origin,
-                                '-moz-transform-origin': origin,
-                                '-ms-transform-origin': origin,
-                                '-0-transform-origin': origin,
-                                'transform-origin': origin
-                            });
-                        },
-                        'touchEnd': function (e) {
-                            //
-                        }
-                    }).append(
-                        $(document.createElement('div')).addClass('rc-window-image').css({
-                            'position': 'absolute',
-                            'left': -left + 'px',
-                            'top': -top + 'px',
-                            'width': _view.width + 'px',
-                            'height': _view.height + 'px',
-                            'pointer-events': 'none',
-                            'background-size': 'cover',
-                            'background-repeat': 'no-repeat',
-                            'background-image': function () {
-                                return 'url("' + getImageUrl(year) + '")';
-                            }
-                        }),
-                        $(document.createElement('div')).css({
-                            'position': 'absolute',
-                            'left': '0',
-                            'top': '0',
-                            'font-size': '24px',
-                            'font-weight': 700,
-                            'pointer-events': 'none',
-                            'color': 'rgba(255, 255, 255, 0.5)',
-                            'margin-top': '1px',
-                            'margin-left': '5px'
-                        }).html(year)
-                    )
+                    window
                 );
+
+                updateLensImages();
             }
 
             function getImageUrl(year) {
+                // Calcuate scale if image exceeds maximum size.
+                var max = Math.max(_view.width, _view.height);
+                var scale = max <= MAX_IMAGE ? 1 : MAX_IMAGE / max;
+
                 var url = $('.rc-theme li.active a').attr('data-url');
                 var fxn = $('.rc-theme li.active a').attr('data-function');
                 var date =
@@ -210,8 +283,8 @@ require([
                 url += '&bboxSR=' + _view.spatialReference.wkid;
                 url += '&imageSR=' + _view.spatialReference.wkid;
                 url += string.substitute('&size=${w},${h}', {
-                    w: _view.width,
-                    h: _view.height
+                    w: Math.min(Math.round(scale * _view.width), MAX_IMAGE),
+                    h: Math.min(Math.round(scale * _view.height), MAX_IMAGE)
                 });
                 url += string.substitute('&time=${f},${t}', {
                     f: 0,
@@ -219,12 +292,40 @@ require([
                 });
                 url += '&format=' + 'jpgpng';
                 url += '&interpolation=' + 'RSP_BilinearInterpolation';
-                url += '&mosaicRule=' +         '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=0.1\'}';
+                url += '&mosaicRule=' + '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=0.1\'}';
                 url += '&renderingRule=' + string.substitute('{rasterFunction:\'${rasterFunction}\'}', {
                     rasterFunction: fxn
                 });
                 return url;
             }
+
+            function updateLensImages() {
+                $('.rc-window').each(function () {
+                    var year = $(this).data().year;
+                    $(this).children('.rc-window-image').css({
+                        'background-image':'none'
+                    });
+                    $(this).children('.rc-window-image').css({
+                        'width': _view.width + 'px',
+                        'height': _view.height + 'px',
+                        'background-image': function () {
+                            return 'url("' + getImageUrl(year) + '")';
+                        }
+                    });
+                });
+            }
         });
+
+        $.fn.bringToFont = function (selector) {
+            var max = Math.max.apply(null, $(this).siblings(selector).map(function () {
+                return Number($(this).css('z-index'));
+            }));
+            if (max >= Number($(this).css('z-index'))) {
+                $(this).css({
+                    'z-index': ++max
+                });
+            }
+            return this;
+        };
     }
 );

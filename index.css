@@ -33,21 +33,13 @@ html, body {
 
 #map-container {
     position: absolute;
-    top: 0;
+    top: 50px;
     left: 0;
     right: 0;
     bottom: 0;
 }
 
 #map {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-#test {
     position: absolute;
     top: 0;
     left: 0;
@@ -72,15 +64,6 @@ html, body {
     font-size: 18px;
 }
 
-.navbar-brand {
-    padding: 0 0 0 0;
-    opacity: 0.5;
-}
-
-.navbar-default {
-    background-color: rgba(255, 255, 255, 0.5) !important;
-}
-
 .rc-item {
     display: inline-block;
 }
@@ -98,9 +81,5 @@ html, body {
     background: white;
     overflow: hidden;
     cursor: grab;
-}
-
-.rc-touching {
-    opacity: 0.8;
-    cursor: grabbing;
+    z-index: 1;
 }

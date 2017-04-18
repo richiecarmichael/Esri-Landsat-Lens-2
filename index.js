@@ -88,10 +88,10 @@ require([
                 updateLensImages();
             }));
 
-            //
-            _view.ui.add(new ScaleBar({ view: _view }), "bottom-left");
+            // Add a scalebar to the lower left hand corner.
+            _view.ui.add(new ScaleBar({ view: _view }), 'bottom-left');
 
-            // 
+            // Respond to menu item selection.
             $('.dropdown-menu li a').click(function () {
                 if ($(this).parent().parent().hasClass('rc-bookmark')) {
                     // Zoom to user defined spatial bookmark.
@@ -116,6 +116,10 @@ require([
                     // Toggle enabled state for clicked item and siblings.
                     $(this).parent().addClass('active').siblings().removeClass('active');
 
+                    //
+                    var theme = $('.rc-theme li.active a').html();
+                    $('.rc-theme').siblings('a').find('.rc-item-value').html(theme);
+                    
                     // Update map lens image.
                     clearLensImages();
                     updateLensImages();
@@ -124,6 +128,12 @@ require([
                 if ($(this).parent().parent().hasClass('rc-year')) {
                     // Get year.
                     var year = $(this).attr('data-year');
+                    
+                    //
+                    if (year === 'close-all'){
+                        $('.rc-window').remove();
+                        return;
+                    }
 
                     // Add new lens.
                     addLens(
@@ -167,7 +177,7 @@ require([
 
                         // 
                         $(e.object).css({
-                            opacity: 0.7,
+                            //opacity: 0.7,
                             cursor: 'grabbing'
                         });
                     },
@@ -203,7 +213,7 @@ require([
                     touchEnd: function (e) {
                         //
                         $(e.object).css({
-                            opacity: 1,
+                            //opacity: 1,
                             cursor: 'grab'
                         });
                     }

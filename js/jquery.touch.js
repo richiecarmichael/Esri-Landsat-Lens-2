@@ -146,6 +146,13 @@
     Touch.prototype.touchstart = function (e) {
         // Prevent event bubbling.
         e.preventDefault();
+        
+        // Invoke touch-start callback
+        if (this.options.touchStart) {
+            this.options.touchStart({
+                object: this.element
+            });
+        }
 
         // Store originating touch positions.
         for (var i = 0; i < e.touches.length; i++) {

@@ -47,6 +47,18 @@ html, body {
     bottom: 0;
 }
 
+#logo {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+}
+
+.rc-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #title {
     color: #777;
     font-size: 30px;

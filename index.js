@@ -70,6 +70,9 @@ require([
                         'zoom'
                     ]
                 },
+                constraints: {
+                    rotationEnabled: false
+                },
                 map: new Map({
                     basemap: 'osm'
                 })

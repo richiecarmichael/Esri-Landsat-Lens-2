@@ -40,6 +40,7 @@ require([
             // Enforce strict mode
             'use strict';
 
+            var LANDSAT_LOOK = 'https://landsatlook.usgs.gov/arcgis/rest/services/LandsatLook/ImageServer';
             var DEFAULT_SIZE = 300;
             var DEFAULT_YEAR = 2017;
             var MAX_IMAGE = 2000;
@@ -109,27 +110,27 @@ require([
                     updateLensImages();
                 }
 
-                if ($(this).parent().parent().hasClass('rc-theme')) {
-                    // Exit if item already selected.
-                    if ($(this).parent().hasClass('active')) { return; }
+                //if ($(this).parent().parent().hasClass('rc-theme')) {
+                //    // Exit if item already selected.
+                //    if ($(this).parent().hasClass('active')) { return; }
 
-                    // Toggle enabled state for clicked item and siblings.
-                    $(this).parent().addClass('active').siblings().removeClass('active');
+                //    // Toggle enabled state for clicked item and siblings.
+                //    $(this).parent().addClass('active').siblings().removeClass('active');
 
-                    //
-                    var theme = $('.rc-theme li.active a').html();
-                    $('.rc-theme').siblings('a').find('.rc-item-value').html(theme);
+                //    //
+                //    var theme = $('.rc-theme li.active a').html();
+                //    $('.rc-theme').siblings('a').find('.rc-item-value').html(theme);
                     
-                    // Update map lens image.
-                    clearLensImages();
-                    updateLensImages();
-                }
+                //    // Update map lens image.
+                //    clearLensImages();
+                //    updateLensImages();
+                //}
 
                 if ($(this).parent().parent().hasClass('rc-year')) {
                     // Get year.
                     var year = $(this).attr('data-year');
                     
-                    //
+                    // Close all popups if user picks last entry.
                     if (year === 'close-all'){
                         $('.rc-window').remove();
                         return;
@@ -280,12 +281,11 @@ require([
                 var scale = max <= MAX_IMAGE ? 1 : MAX_IMAGE / max;
 
                 // Get url/function from user defined selection.
-                var url = $('.rc-theme li.active a').attr('data-url');
+                var url = LANDSAT_LOOK; // $('.rc-theme li.active a').attr('data-url');
                 var fxn = $('.rc-theme li.active a').attr('data-function');
 
                 // Construct map request url.
-                var date =
-                    url += '/exportImage?f=image'
+                url += '/exportImage?f=image'
                 url += string.substitute('&bbox=${xmin},${ymin},${xmax},${ymax}', {
                     xmin: _view.extent.xmin,
                     ymin: _view.extent.ymin,
@@ -302,12 +302,13 @@ require([
                     f: 0,
                     t: Date.UTC(year, 0, 1)
                 });
-                url += '&format=' + 'jpgpng';
+                url += '&format=' + 'jpg';
                 url += '&interpolation=' + 'RSP_BilinearInterpolation';
-                url += '&mosaicRule=' + '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=0.1\'}';
-                url += '&renderingRule=' + string.substitute('{rasterFunction:\'${rasterFunction}\'}', {
-                    rasterFunction: fxn
-                });
+                url += '&mosaicRule=' + '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=20\'}';
+                url += '&renderingRule=' + '{rasterFunction:\'Stretch\',\'rasterFunctionArguments\':{\'StretchType\':6,\'MinPercent\':0.5,\'MaxPercent\':0.5,\'DRA\':true},\'variableName\':\'Raster\'}';
+                //url += '&renderingRule=' + string.substitute('{rasterFunction:\'${rasterFunction}\'}', {
+                //    rasterFunction: fxn
+                //});
                 return url;
             }
 

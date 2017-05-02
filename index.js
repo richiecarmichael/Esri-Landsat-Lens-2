@@ -23,6 +23,7 @@ require([
         'esri/geometry/ScreenPoint',
         'esri/views/MapView',
         'esri/widgets/ScaleBar',
+        'esri/widgets/Search',
         'dojo/string',
         'dojo/domReady!'
     ],
@@ -34,6 +35,7 @@ require([
         ScreenPoint,
         MapView,
         ScaleBar,
+        Search,
         string
     ) {
         $(document).ready(function () {
@@ -92,7 +94,26 @@ require([
             }));
 
             // Add a scalebar to the lower left hand corner.
-            _view.ui.add(new ScaleBar({ view: _view }), 'bottom-left');
+            _view.ui.add(
+                new ScaleBar({
+                    view: _view
+                }),
+                {
+                    position: 'bottom-left'
+                }
+            );
+
+            // Add a search box to the upper left hand corner.
+            _view.ui.add(
+                new Search({
+                    view: _view,
+                    popupEnabled: false
+                }),
+                {
+                    position: 'top-left',
+                    index: 0
+                }
+            );
 
             // Respond to menu item selection.
             $('.dropdown-menu li a').click(function () {
@@ -320,6 +341,7 @@ require([
                     });
                 });
             }
+
             function updateLensImages() {
                 $('.rc-window').each(function () {
                     var year = $(this).data().year;

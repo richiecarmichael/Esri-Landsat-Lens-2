@@ -308,7 +308,7 @@ require([
                 var fxn = $('.rc-theme li.active a').attr('data-function');
 
                 // Construct map request url.
-                url += '/exportImage?f=image'
+                url += '/exportImage?f=image';
                 url += string.substitute('&bbox=${xmin},${ymin},${xmax},${ymax}', {
                     xmin: _view.extent.xmin,
                     ymin: _view.extent.ymin,

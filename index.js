@@ -303,7 +303,24 @@ require([
                 var max = Math.max(_view.width, _view.height);
                 var scale = max <= MAX_IMAGE ? 1 : MAX_IMAGE / max;
 
-                // Get url/function from user defined selection.
+                //// Get url/function from user defined selection.
+                //var url = 'http://gis.ashland.or.us/arcgis/rest/services/pictometry3inch_jason/MapServer';
+                //url += '/export?f=image';
+                //url += string.substitute('&bbox=${xmin},${ymin},${xmax},${ymax}', {
+                //    xmin: _view.extent.xmin,
+                //    ymin: _view.extent.ymin,
+                //    xmax: _view.extent.xmax,
+                //    ymax: _view.extent.ymax
+                //});
+                //url += '&bboxSR=' + _view.spatialReference.wkid;
+                //url += '&imageSR=' + _view.spatialReference.wkid;
+                //url += string.substitute('&size=${w},${h}', {
+                //    w: Math.min(Math.round(scale * _view.width), MAX_IMAGE),
+                //    h: Math.min(Math.round(scale * _view.height), MAX_IMAGE)
+                //});
+                //url += '&format=' + 'jpg';
+                //return url;
+
                 var url = $('.rc-theme li.active a').attr('data-url');
                 var fxn = $('.rc-theme li.active a').attr('data-function');
 

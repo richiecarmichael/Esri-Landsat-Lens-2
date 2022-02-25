@@ -1,65 +1,41 @@
-/* ------------------------------------------------------------
-
-   Copyright 2017 Esri
-
-   Licensed under the Apache License, Version 2.0 (the 'License');
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at:
-   http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an 'AS IS' BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
---------------------------------------------------------------- */
-
 require([
-  'esri/Map',
-  'esri/geometry/Extent',
-  'esri/geometry/SpatialReference',
-  'esri/geometry/Point',
-  'esri/geometry/ScreenPoint',
-  'esri/views/MapView',
-  'esri/widgets/ScaleBar',
-  'esri/widgets/Search',
-  'dojo/string',
-  'dojo/domReady!'
+  "esri/Map",
+  "esri/TimeExtent",
+  "esri/layers/ImageryLayer",
+  "esri/views/MapView",
+  "esri/widgets/ScaleBar",
+  "esri/widgets/Search"
 ],
   function (
     Map,
-    Extent,
-    SpatialReference,
-    Point,
-    ScreenPoint,
+    TimeExtent,
+    ImageryLayer,
     MapView,
     ScaleBar,
-    Search,
-    string
+    Search
   ) {
     $(document).ready(function () {
-      // Enforce strict mode
-      'use strict';
-
-      var DEFAULT_SIZE = 300;
-      var DEFAULT_YEAR = 2017;
-      var MAX_IMAGE = 2000;
+      const DEFAULT_SIZE = 300;
+      const DEFAULT_YEAR = 2017;
+      const MAX_IMAGE = 2000;
 
       // Get extent of the Palms in Dubai
-      var palms1 = $('.rc-bookmark li a').get(7);
-      var palms2 = $(palms1).attr('data-extent').split(',');
+      const palms1 = $('.rc-bookmark li a').get(7);
+      const palms2 = $(palms1).attr('data-extent').split(',');
 
-      // Map view
-      var _view = new MapView({
+      let layer;
+
+      const view = new MapView({
         container: 'map',
-        extent: new Extent({
+        extent: {
           xmin: Number(palms2[0]),
           ymin: Number(palms2[1]),
           xmax: Number(palms2[2]),
           ymax: Number(palms2[3]),
-          spatialReference: SpatialReference.WebMercator
-        }),
+          spatialReference: {
+            wkid: 102100
+          }
+        },
         padding: {
           left: 0,
           top: 0,
@@ -78,35 +54,55 @@ require([
           basemap: 'osm'
         })
       });
-      _view.then(function () {
+      view.when(async () => {
+        await getLayer();
         addLens(
           DEFAULT_YEAR,
           DEFAULT_SIZE
         );
       });
 
-      //var navigating = false;
-      _view.watch('extent', $.debounce(250, true, function (e) {
+      async function getLayer() {
+        const url = $('.rc-theme li.active a').attr('data-url');
+        const functionName = $('.rc-theme li.active a').attr('data-function');
+
+        layer = new ImageryLayer({
+          url,
+          format: "jpg",
+          renderingRule: {
+            functionName
+          },
+          mosaicRule: {
+            method: "attribute",
+            sortField: "AcquisitionDate",
+            sortValue: "2017/02/06, 12:00 AM",
+            ascending: true,
+            operation: "first",
+            where: "CloudCover<=0.1"
+          }
+        });
+        await layer.load();
+      }
+
+      view.watch('extent', $.debounce(250, true, function (e) {
         clearLensImages();
       }));
-      _view.watch('extent', $.debounce(250, function (e) {
+      view.watch('extent', $.debounce(250, function (e) {
         updateLensImages();
       }));
 
-      // Add a scalebar to the lower left hand corner.
-      _view.ui.add(
+      view.ui.add(
         new ScaleBar({
-          view: _view
+          view
         }),
         {
           position: 'bottom-left'
         }
       );
 
-      // Add a search box to the upper left hand corner.
-      _view.ui.add(
+      view.ui.add(
         new Search({
-          view: _view,
+          view,
           popupEnabled: false
         }),
         {
@@ -115,51 +111,45 @@ require([
         }
       );
 
-      // Respond to menu item selection.
-      $('.dropdown-menu li a').click(function () {
+      $('.dropdown-menu li a').click(async function () {
         if ($(this).parent().parent().hasClass('rc-bookmark')) {
-          // Zoom to user defined spatial bookmark.
-          var coordinates = $(this).attr('data-extent').split(',');
-          _view.extent = new Extent({
+          const coordinates = $(this).attr('data-extent').split(',');
+          view.extent = {
             xmin: Number(coordinates[0]),
             ymin: Number(coordinates[1]),
             xmax: Number(coordinates[2]),
             ymax: Number(coordinates[3]),
-            spatialReference: SpatialReference.WebMercator
-          });
+            spatialReference: {
+              wkid: 102100
+            }
+          };
 
-          // Update map lens image.
           clearLensImages();
           updateLensImages();
         }
 
         if ($(this).parent().parent().hasClass('rc-theme')) {
-          // Exit if item already selected.
           if ($(this).parent().hasClass('active')) { return; }
 
-          // Toggle enabled state for clicked item and siblings.
           $(this).parent().addClass('active').siblings().removeClass('active');
 
-          //
-          var theme = $('.rc-theme li.active a').html();
+          const theme = $('.rc-theme li.active a').html();
           $('.rc-theme').siblings('a').find('.rc-item-value').html(theme);
 
-          // Update map lens image.
+          await getLayer();
+
           clearLensImages();
           updateLensImages();
         }
 
         if ($(this).parent().parent().hasClass('rc-year')) {
-          // Get year.
-          var year = $(this).attr('data-year');
+          const year = $(this).attr('data-year');
 
-          // Close all popups if user picks last entry.
           if (year === 'close-all') {
             $('.rc-window').remove();
             return;
           }
 
-          // Add new lens.
           addLens(
             year,
             DEFAULT_SIZE
@@ -167,7 +157,6 @@ require([
         }
       });
 
-      // Display help and about dialogs.
       $('#buttonHelp').click(function () {
         $('#modalHelp').modal('show');
       });
@@ -175,75 +164,44 @@ require([
         $('#modalAbout').modal('show');
       });
 
-      // Function that adds a new lens.
       function addLens(year, size) {
-        // 
-        var left = _view.width / 2 - size / 2;
-        var top = _view.height / 2 - size / 2;
+        const left = view.width / 2 - size / 2;
+        const top = view.height / 2 - size / 2;
 
-        var window = $(document.createElement('div')).addClass('rc-window').css({
+        const window = $(document.createElement('div')).addClass('rc-window').css({
           position: 'absolute',
           left: left + 'px',
           top: top + 'px',
           width: size + 'px',
           height: size + 'px'
         }).data({
-          year: year
+          year
         });
 
         window.touch({
           canTranslate: true,
           canRotate: true,
           canScale: true,
-          touchStart: function (e) {
-            // Bring lens to the front
+          touchStart: (e) => {
             $(e.object).bringToFont('.rc-window');
-
-            // 
             $(e.object).css({
-              //opacity: 0.7,
               cursor: 'grabbing'
             });
           },
-          touchMove: function (e) {
-            // Create texture transformation
-            var transform = string.substitute('translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)', {
-              x: -e.x,
-              y: -e.y,
-              s: 1 / e.s,
-              r: -e.r
-            });
+          touchMove: (e) => {
+            const transform = `translate(${-e.x}px,${-e.y}px) scale(${1 / e.s}) rotate(${-e.r}deg)`;
 
-            // Create texture transformation origin
-            var origin = string.substitute('${x}px ${y}px', {
-              x: _view.width / 2 + e.x,
-              y: _view.height / 2 + e.y
-            });
-
-            // Apply transformation and transformation origin
             $(e.object).children('.rc-window-image').css({
-              '-webkit-transform': transform,
-              '-moz-transform': transform,
-              '-ms-transform': transform,
-              '-0-transform': transform,
-              'transform': transform,
-              '-webkit-transform-origin': origin,
-              '-moz-transform-origin': origin,
-              '-ms-transform-origin': origin,
-              '-0-transform-origin': origin,
-              'transform-origin': origin
+              transform
             });
           },
-          touchEnd: function (e) {
-            //
+          touchEnd: (e) => {
             $(e.object).css({
-              //opacity: 1,
               cursor: 'grab'
             });
           }
         });
 
-        // Add animated progress gif
         window.append(
           $(document.createElement('img'))
             .attr('src', 'img/loading-throb.gif')
@@ -258,14 +216,13 @@ require([
             })
         );
 
-        // Add background map texture
         window.append(
           $(document.createElement('div')).addClass('rc-window-image').css({
             position: 'absolute',
             left: -left + 'px',
             top: -top + 'px',
-            width: _view.width + 'px',
-            height: _view.height + 'px',
+            width: view.width + 'px',
+            height: view.height + 'px',
             'pointer-events': 'none',
             'background-size': 'cover',
             'background-repeat': 'no-repeat',
@@ -273,7 +230,6 @@ require([
           })
         );
 
-        // Add year text
         window.append(
           $(document.createElement('div')).css({
             position: 'absolute',
@@ -288,50 +244,45 @@ require([
           }).html(year)
         );
 
-        // Add window to window container
         $('#map-container').append(
           window
         );
 
-        // Update lens texture
         clearLensImages();
         updateLensImages();
       }
 
-      function getImageUrl(year) {
-        // Calcuate scale (if image width or height exceeds maximum).
-        var max = Math.max(_view.width, _view.height);
-        var scale = max <= MAX_IMAGE ? 1 : MAX_IMAGE / max;
+      async function getImageUrl(year) {
+        const max = Math.max(view.width, view.height);
+        const scale = max <= MAX_IMAGE ? 1 : MAX_IMAGE / max;
 
-        var url = $('.rc-theme li.active a').attr('data-url');
-        var fxn = $('.rc-theme li.active a').attr('data-function');
+        const width = Math.min(Math.round(scale * view.width), MAX_IMAGE);
+        const height = Math.min(Math.round(scale * view.height), MAX_IMAGE);
 
-        // Construct map request url.
-        url += '/exportImage?f=image';
-        url += string.substitute('&bbox=${xmin},${ymin},${xmax},${ymax}', {
-          xmin: _view.extent.xmin,
-          ymin: _view.extent.ymin,
-          xmax: _view.extent.xmax,
-          ymax: _view.extent.ymax
-        });
-        url += '&bboxSR=' + _view.spatialReference.wkid;
-        url += string.substitute('&size=${w},${h}', {
-          w: Math.min(Math.round(scale * _view.width), MAX_IMAGE),
-          h: Math.min(Math.round(scale * _view.height), MAX_IMAGE)
-        });
-        url += '&imageSR=' + _view.spatialReference.wkid;
-        url += string.substitute('&time=${f},${t}', {
-          f: 0,
-          t: Date.UTC(year, 0, 1)
-        });
-        url += '&format=' + 'jpg';
-        url += '&interpolation=' + 'RSP_BilinearInterpolation';
-        url += '&mosaicRule=' + '{mosaicMethod:\'esriMosaicAttribute\',sortField:\'AcquisitionDate\',sortValue:\'2017/02/06, 12:00 AM\',ascending:true,mosaicOperation:\'MT_FIRST\',where:\'CloudCover<=0.1\'}';
-        url += '&renderingRule=' + string.substitute('{rasterFunction:\'${rasterFunction}\'}', {
-          rasterFunction: fxn
-        });
+        const fetchResult = await layer.fetchImage(
+          view.extent,
+          width,
+          height,
+          {
+            timeExtent: new TimeExtent({
+              start: new Date(0),
+              end: Date.UTC(year, 0, 1) 
+            })
+          }
+        );
+        const pixelBlock = fetchResult.pixelData.pixelBlock;
+        const rgba = pixelBlock.getAsRGBA();
 
-        return url;
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const context = canvas.getContext('2d');
+        const imageData = context.createImageData(width, height);
+        imageData.data.set(rgba);
+        context.putImageData(imageData, 0, 0);
+
+        return canvas.toDataURL('image/jpeg', 1.0);
       }
 
       function clearLensImages() {
@@ -343,13 +294,14 @@ require([
       }
 
       function updateLensImages() {
-        $('.rc-window').each(function () {
-          var year = $(this).data().year;
+        $('.rc-window').each(async function () {
+          const year = $(this).data().year;
+          const url = await getImageUrl(year);
           $(this).children('.rc-window-image').css({
-            width: _view.width + 'px',
-            height: _view.height + 'px',
+            width: view.width + 'px',
+            height: view.height + 'px',
             'background-image': function () {
-              return 'url("' + getImageUrl(year) + '")';
+              return `url(${url})`;
             }
           });
         });
@@ -357,7 +309,7 @@ require([
     });
 
     $.fn.bringToFont = function (selector) {
-      var max = Math.max.apply(null, $(this).siblings(selector).map(function () {
+      let max = Math.max.apply(null, $(this).siblings(selector).map(function () {
         return Number($(this).css('z-index'));
       }));
       if (max >= Number($(this).css('z-index'))) {

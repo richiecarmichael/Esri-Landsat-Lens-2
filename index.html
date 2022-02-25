@@ -1,7 +1,8 @@
 ﻿<!doctype html>
 <html>
+
 <head prefix='og: http://ogp.me/ns#'>
-    <!--
+  <!--
 
     Copyright 2017 Esri
 
@@ -17,238 +18,288 @@
     limitations under the License.
 
     -->
-    <title>Landsat Lens</title>
+  <title>Landsat Lens</title>
 
-    <meta http-equiv='content-type' content='text/html;charset=utf-8' />
-    <meta name='author' content='Esri' />
-    <meta name='keywords' content='landsat lens imagery satellite epoch change detection time warp esri' />
-    <meta name='description' content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
-    <meta name='robots' content='index,follow' />
+  <meta http-equiv='content-type' content='text/html;charset=utf-8' />
+  <meta name='author' content='Esri' />
+  <meta name='keywords' content='landsat lens imagery satellite epoch change detection time warp esri' />
+  <meta name='description'
+    content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
+  <meta name='robots' content='index,follow' />
 
-    <meta name='twitter:card' value='summary' />
-    <meta name='twitter:title' content='Landsat Lens' />
-    <meta name='twitter:site' content='@esri' />
-    <meta name='twitter:description' content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
-    <meta name='twitter:image' content='/img/hawaii.jpg' />
+  <meta name='twitter:card' value='summary' />
+  <meta name='twitter:title' content='Landsat Lens' />
+  <meta name='twitter:site' content='@esri' />
+  <meta name='twitter:description'
+    content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
+  <meta name='twitter:image' content='/img/hawaii.jpg' />
 
-    <meta property='og:locale' content='en_us' />
-    <meta property='og:title' content='Landsat Lens' />
-    <meta property='og:description' content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
-    <meta property='og:type' content='website' />
-    <meta property='og:url' content='/index.html' />
-    <meta property='og:image' content='/hawaii.jpg' />
+  <meta property='og:locale' content='en_us' />
+  <meta property='og:title' content='Landsat Lens' />
+  <meta property='og:description'
+    content='Multitouch web mapping application for browsing and comparing historic imagery from USGS Landsat satellites.' />
+  <meta property='og:type' content='website' />
+  <meta property='og:url' content='/index.html' />
+  <meta property='og:image' content='/hawaii.jpg' />
 
-    <meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no' />
-    <meta name='apple-mobile-web-app-capable' content='yes' />
-    <meta name='apple-touch-fullscreen' content='yes' />
-    <link rel='apple-touch-icon' href='/img/icon.jpg' />
+  <meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no' />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta name='apple-touch-fullscreen' content='yes' />
+  <link rel='apple-touch-icon' href='/img/icon.jpg' />
 
-    <link type='image/ico' href='img/favicon.ico' rel='shortcut icon' />
-    <link type='image/ico' href='img/favicon.ico' rel='icon' />
+  <link type='image/ico' href='img/favicon.ico' rel='shortcut icon' />
+  <link type='image/ico' href='img/favicon.ico' rel='icon' />
 
-    <link type='text/css' rel='stylesheet' href='//js.arcgis.com/4.3/esri/css/main.css' />
-    <link type='text/css' rel='stylesheet' href='css/bootstrap.min.css' />
-    <link type='text/css' rel='stylesheet' href='index.css' />
+  <link type='text/css' rel='stylesheet' href='//js.arcgis.com/4.3/esri/css/main.css' />
+  <link type='text/css' rel='stylesheet' href='css/bootstrap.min.css' />
+  <link type='text/css' rel='stylesheet' href='index.css' />
 
-    <script type='text/javascript' src='js/jquery-2.2.4.min.js'></script>
-    <script type='text/javascript' src='js/jquery.touch.js'></script>
-    <script type='text/javascript' src='js/jquery.mousewheel.min.js'></script>
-    <script type='text/javascript' src='js/jquery.ba-throttle-debounce.min.js'></script>
-    <script type='text/javascript' src='js/bootstrap.min.js'></script>
-    <script type='text/javascript' src='//js.arcgis.com/4.3/'></script>
-    <script type='text/javascript' src='index.js'></script>
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-        ga('create', 'UA-10866840-33', 'auto');
-        ga('send', 'pageview');
-    </script>
+  <script type='text/javascript' src='js/jquery-2.2.4.min.js'></script>
+  <script type='text/javascript' src='js/jquery.touch.js'></script>
+  <script type='text/javascript' src='js/jquery.mousewheel.min.js'></script>
+  <script type='text/javascript' src='js/jquery.ba-throttle-debounce.min.js'></script>
+  <script type='text/javascript' src='js/bootstrap.min.js'></script>
+  <script type='text/javascript' src='//js.arcgis.com/4.3/'></script>
+  <script type='text/javascript' src='index.js'></script>
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-10866840-33', 'auto');
+    ga('send', 'pageview');
+  </script>
 </head>
+
 <body>
-    <div id='map-container'>
-        <div id='map'></div>
-        <a id='logo' target='_blank' href='https://www.esri.com'><img src='img/esri-white.png' height='53' /></a>
+  <div id='map-container'>
+    <div id='map'></div>
+    <a id='logo' target='_blank' href='https://www.esri.com'><img src='img/esri-white.png' height='53' /></a>
+  </div>
+  <nav class='navbar navbar-default navbar-fixed-top'>
+    <div class='container-fluid'>
+      <div class='navbar-header'>
+        <button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#navbar'
+          aria-expanded='false'>
+          <span class='sr-only'>Toggle navigation</span>
+          <span class='icon-bar'></span>
+          <span class='icon-bar'></span>
+          <span class='icon-bar'></span>
+        </button>
+        <div id='title'>Landsat Lens</div>
+      </div>
+      <div class='collapse navbar-collapse' id='navbar'>
+        <ul class='nav navbar-nav navbar-right'>
+          <li class='dropdown'>
+            <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'
+              aria-expanded='false'>
+              <div class='rc-item'>
+                <div class='rc-item-title'>Windows</div>
+                <div class='rc-item-value'>Pick</div>
+              </div>
+              <span class='caret'></span>
+            </a>
+            <ul class='dropdown-menu rc-year'>
+              <li>
+                <a data-year='2002' href='#'>2002</a>
+              </li>
+              <li>
+                <a data-year='2005' href='#'>2005</a>
+              </li>
+              <li>
+                <a data-year='2010' href='#'>2010</a>
+              </li>
+              <li>
+                <a data-year='2015' href='#'>2015</a>
+              </li>
+              <li>
+                <a data-year='2017' href='#'>2017</a>
+              </li>
+              <li role='separator' class='divider'></li>
+              <li>
+                <a data-year='close-all' href='#'>Close All</a>
+              </li>
+            </ul>
+          </li>
+          <li class='dropdown'>
+            <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'
+              aria-expanded='false'>
+              <div class='rc-item'>
+                <div class='rc-item-title'>Bookmark</div>
+                <div class='rc-item-value'>Pick</div>
+              </div>
+              <span class='caret'></span>
+            </a>
+            <!--
+                The following list of preset bookmarks was inspired by:
+                https://earthobservatory.nasa.gov/Features/WorldOfChange/
+            -->
+            <ul class='dropdown-menu rc-bookmark'>
+              <li>
+                <a data-extent='6391083, 5442255, 6853985, 5818936' href='#'>Aral Sea</a>
+              </li>
+              <li>
+                <a data-extent='-10200228, 3412905, -10142366, 3459990' href='#'>Atchafalaya Bay</a>
+              </li>
+              <li>
+                <a data-extent='-7796340, 5100238, -7781875, 5112009' href='#'>Cape Cod</a>
+              </li>
+              <li>
+                <a data-extent='-16428273, 8609915, -16312547, 8704086' href='#'>Columbia Glacier</a>
+              </li>
+              <li>
+                <a data-extent='-13608687, 5807163, -13594222, 5818342' href='#'>Mount Saint Helens</a>
+              </li>
+              <li>
+                <a data-extent='-12443536, 4405304, -12327810, 4499474' href='#'>Lake Powell</a>
+              </li>
+              <li>
+                <a data-extent='-12845948, 4302382, -12788085, 4347098' href='#'>Las Vegas</a>
+              </li>
+              <li>
+                <a data-extent='6108081, 2864714, 6137013, 2888257' href='#'>Palm Jebel Ali</a>
+              </li>
+              <li>
+                <a data-extent='13231089, 4522106, 13288952, 4569192' href='#'>Yellow River Delta</a>
+              </li>
+            </ul>
+          </li>
+          <li class='dropdown'>
+            <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'
+              aria-expanded='false'>
+              <div class='rc-item'>
+                <div class='rc-item-title'>Theme</div>
+                <div class='rc-item-value'>Natural Color</div>
+              </div>
+              <span class='caret'></span>
+            </a>
+            <ul class='dropdown-menu rc-theme'>
+              <li>
+                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer'
+                  data-function='Agriculture with DRA' href='#'>Agriculture</a>
+              </li>
+              <li>
+                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer'
+                  data-function='Color Infrared with DRA' href='#'>Color Infrared</a>
+              </li>
+              <li class='active'>
+                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer'
+                  data-function='Pansharpened Enhanced with DRA' href='#'>Natural Color</a>
+              </li>
+              <li>
+                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer'
+                  data-function='Normalized Difference Moisture Index Colorized' href='#'>Moisture Index</a>
+              </li>
+              <li>
+                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer'
+                  data-function='NDVI Colorized' href='#'>Vegetation Index</a>
+              </li>
+            </ul>
+          </li>
+          <li><a id='buttonHelp' href='#'>Help</a></li>
+          <li><a id='buttonAbout' href='#'>About</a></li>
+        </ul>
+      </div>
     </div>
-    <nav class='navbar navbar-default navbar-fixed-top'>
-        <div class='container-fluid'>
-            <div class='navbar-header'>
-                <button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#navbar' aria-expanded='false'>
-                    <span class='sr-only'>Toggle navigation</span>
-                    <span class='icon-bar'></span>
-                    <span class='icon-bar'></span>
-                    <span class='icon-bar'></span>
-                </button>
-                <div id='title'>Landsat Lens</div>
-            </div>
-            <div class='collapse navbar-collapse' id='navbar'>
-                <ul class='nav navbar-nav navbar-right'>
-                    <li class='dropdown'>
-                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>
-                            <div class='rc-item'>
-                                <div class='rc-item-title'>Windows</div>
-                                <div class='rc-item-value'>Pick</div>
-                            </div>
-                            <span class='caret'></span>
-                        </a>
-                        <ul class='dropdown-menu rc-year'>
-                            <li>
-                                <a data-year='2002' href='#'>2002</a>
-                            </li>
-                            <li>
-                                <a data-year='2005' href='#'>2005</a>
-                            </li>
-                            <li>
-                                <a data-year='2010' href='#'>2010</a>
-                            </li>
-                            <li>
-                                <a data-year='2015' href='#'>2015</a>
-                            </li>
-                            <li>
-                                <a data-year='2017' href='#'>2017</a>
-                            </li>
-                            <li role='separator' class='divider'></li>
-                            <li>
-                                <a data-year='close-all' href='#'>Close All</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class='dropdown'>
-                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>
-                            <div class='rc-item'>
-                                <div class='rc-item-title'>Bookmark</div>
-                                <div class='rc-item-value'>Pick</div>
-                            </div>
-                            <span class='caret'></span>
-                        </a>
-                        <!--
-                            The following list of preset bookmarks was inspired by:
-                            https://earthobservatory.nasa.gov/Features/WorldOfChange/
-                        -->
-                        <ul class='dropdown-menu rc-bookmark'>
-                            <li>
-                                <a data-extent='6391083, 5442255, 6853985, 5818936' href='#'>Aral Sea</a>
-                            </li>
-                            <li>
-                                <a data-extent='-10200228, 3412905, -10142366, 3459990' href='#'>Atchafalaya Bay</a>
-                            </li>
-                            <li>
-                                <a data-extent='-7796340, 5100238, -7781875, 5112009' href='#'>Cape Cod</a>
-                            </li>
-                            <li>
-                                <a data-extent='-16428273, 8609915, -16312547, 8704086' href='#'>Columbia Glacier</a>
-                            </li>
-                            <li>
-                                <a data-extent='-13608687, 5807163, -13594222, 5818342' href='#'>Mount Saint Helens</a>
-                            </li>
-                            <li>
-                                <a data-extent='-12443536, 4405304, -12327810, 4499474' href='#'>Lake Powell</a>
-                            </li>
-                            <li>
-                                <a data-extent='-12845948, 4302382, -12788085, 4347098' href='#'>Las Vegas</a>
-                            </li>
-                            <li>
-                                <a data-extent='6108081, 2864714, 6137013, 2888257' href='#'>Palm Jebel Ali</a>
-                            </li>
-                            <li>
-                                <a data-extent='13231089, 4522106, 13288952, 4569192' href='#'>Yellow River Delta</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class='dropdown'>
-                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>
-                            <div class='rc-item'>
-                                <div class='rc-item-title'>Theme</div>
-                                <div class='rc-item-value'>Natural Color</div>
-                            </div>
-                            <span class='caret'></span>
-                        </a>
-                        <ul class='dropdown-menu rc-theme'>
-                            <li>
-                                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer' data-function='Agriculture with DRA' href='#'>Agriculture</a>
-                            </li>
-                            <li>
-                                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer' data-function='Color Infrared with DRA' href='#'>Color Infrared</a>
-                            </li>
-                            <li class='active'>
-                                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/PS/ImageServer' data-function='Pansharpened Enhanced with DRA' href='#'>Natural Color</a>
-                            </li>
-                            <li>
-                                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer' data-function='Normalized Difference Moisture Index Colorized' href='#'>Moisture Index</a>
-                            </li>
-                            <li>
-                                <a data-url='https://landsat2.arcgis.com/arcgis/rest/services/Landsat/MS/ImageServer' data-function='NDVI Colorized' href='#'>Vegetation Index</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li><a id='buttonHelp' href='#'>Help</a></li>
-                    <li><a id='buttonAbout' href='#'>About</a></li>
-                </ul>
-            </div>
+  </nav>
+  <div id='modalHelp' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='label1'>
+    <div class='modal-dialog' role='document'>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span
+              aria-hidden='true'>&times;</span></button>
+          <h4 class='modal-title' id='label1'>How to use this App</h4>
         </div>
-    </nav>
-    <div id='modalHelp' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='label1'>
-        <div class='modal-dialog' role='document'>
-            <div class='modal-content'>
-                <div class='modal-header'>
-                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
-                    <h4 class='modal-title' id='label1'>How to use this App</h4>
-                </div>
-                <div class='modal-body'>
-                    <p>
-                        <img class='rc-center' src='img/landsat-lens-2.gif' height='300' />
-                    </p>
-                    <p>Welcome to <a target='_blank' href='https://maps.esri.com/rc/landsat2/index.html'>Landsat Lens</a>, a touch and mouse friendly application for browsing past and present <a target='_blank' href='https://www.esri.com/landing-pages/software/landsat/unlock-earths-secrets'>Landsat</a> satellite imagery hosted by <a target='_blank' href=''>Esri</a>.</p>
-                    <p>Using a mouse, a lens can be moved around the map with a standard left mouse click and drag operation. Scrolling the mouse wheel will enlarge or decrease the size of a lens depending on the direction.</p>
-                    <p>With a touch device like an iPad, a lens can moved with an intuitive press and drag. To resize, pinch or expand two or more fingers within a lens. Likewise, rotating a lens is achieved by twisting two or more fingers. Unlike with a mouse, touch screens allow the user to manipulate two or more lenses concurrently.</p>
-                    <p>By default, the app starts with a lens dated 2017 located close to the <a target='_blank' href='https://en.wikipedia.org/wiki/Palm_Jebel_Ali'>Palm Jebel Ali</a> in <a target='_blank' href='https://en.wikipedia.org/wiki/Dubai'>Dubai</a>. To pick a preset location choose from one of the entries from the <b>Bookmarks</b> dropdown menu. Alternative you can pan or zoom to any area of interest.</p>
-                    <p>For one of the preset locations, or your own area of interest, you may want to view changes over time. To do so, use the <b>Windows</b> dropdown menu to add a window showing 2002, 2005, 2010, 2015 or 2017 imagery. By swiping lenses over the basemap and one another you can easily see changes in vegetation, coastlines, rivers and human activity. Use the last option in the dropdown menu to removal all lenses from the map.</p>
-                    <p>To display this dialog again click the <b>help</b> button in the upper right hand corner of the application. The <b>About</b> dialog details the technology used to build this application and links to learn more about the imagery.</p>
-                    <p>Please visit our <a target='_blank' href='https://maps.esri.com/portal/webapps/'>blog</a> or web <a target='_blank' href='https://geonet.esri.com/groups/applications-prototype-lab'>portal</a> for more information on this and other applications.</p>
-                </div>
-            </div>
+        <div class='modal-body'>
+          <p>
+            <img class='rc-center' src='img/landsat-lens-2.gif' height='300' />
+          </p>
+          <p>Welcome to <a target='_blank' href='https://maps.esri.com/rc/landsat2/index.html'>Landsat Lens</a>, a touch
+            and mouse friendly application for browsing past and present <a target='_blank'
+              href='https://www.esri.com/landing-pages/software/landsat/unlock-earths-secrets'>Landsat</a> satellite
+            imagery hosted by <a target='_blank' href=''>Esri</a>.</p>
+          <p>Using a mouse, a lens can be moved around the map with a standard left mouse click and drag operation.
+            Scrolling the mouse wheel will enlarge or decrease the size of a lens depending on the direction.</p>
+          <p>With a touch device like an iPad, a lens can moved with an intuitive press and drag. To resize, pinch or
+            expand two or more fingers within a lens. Likewise, rotating a lens is achieved by twisting two or more
+            fingers. Unlike with a mouse, touch screens allow the user to manipulate two or more lenses concurrently.
+          </p>
+          <p>By default, the app starts with a lens dated 2017 located close to the <a target='_blank'
+              href='https://en.wikipedia.org/wiki/Palm_Jebel_Ali'>Palm Jebel Ali</a> in <a target='_blank'
+              href='https://en.wikipedia.org/wiki/Dubai'>Dubai</a>. To pick a preset location choose from one of the
+            entries from the <b>Bookmarks</b> dropdown menu. Alternative you can pan or zoom to any area of interest.
+          </p>
+          <p>For one of the preset locations, or your own area of interest, you may want to view changes over time. To
+            do so, use the <b>Windows</b> dropdown menu to add a window showing 2002, 2005, 2010, 2015 or 2017 imagery.
+            By swiping lenses over the basemap and one another you can easily see changes in vegetation, coastlines,
+            rivers and human activity. Use the last option in the dropdown menu to removal all lenses from the map.</p>
+          <p>To display this dialog again click the <b>help</b> button in the upper right hand corner of the
+            application. The <b>About</b> dialog details the technology used to build this application and links to
+            learn more about the imagery.</p>
+          <p>Please visit our <a target='_blank' href='https://maps.esri.com/portal/webapps/'>blog</a> or web <a
+              target='_blank' href='https://geonet.esri.com/groups/applications-prototype-lab'>portal</a> for more
+            information on this and other applications.</p>
         </div>
+      </div>
     </div>
-    <div id='modalAbout' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='label2'>
-        <div class='modal-dialog' role='document'>
-            <div class='modal-content'>
-                <div class='modal-header'>
-                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
-                    <h4 class='modal-title' id='label2'>About this App</h4>
-                </div>
-                <div class='modal-body'>
-                    <p>
-                       <img class='rc-center' src='img/esri-black.png' height='43' />
-                    </p>
-                    <p>
-                        This application was designed and developed by <a target='_blank' href='https://www.esri.com/'>Esri</a>'s <a target='_blank' href='https://geonet.esri.com/groups/applications-prototype-lab'>Applications Prototype Lab</a> in Redlands, California.
-                    </p>
-                    <p>
-                        The source code is available <a target='_blank' href='https://github.com/richiecarmichael/Esri-Landsat-Lens-2'>here</a>.
-                    </p>
-                    <p>
-                        The application was built using the following technologies:
-                        <ul style='margin-left: -20px;'>
-                            <li><a target='_blank' href='https://developers.arcgis.com/javascript/'>ArcGIS API for JavaScript</a> by <a target='_blank' href='https://www.esri.com'>Esri</a></li>
-                            <li><a target='_blank' href='https://getbootstrap.com/'>Bootstrap</a> by <a target='_blank' href='https://twitter.com/'>Twitter Inc.</a></li>
-                            <li><a target='_blank' href='https://github.com/cowboy/jquery-throttle-debounce/'>jQuery Throttle / Debounce</a> by <a target='_blank' href='https://github.com/cowboy'>Ben Alman</a></li>
-                            <li><a target='_blank' href='https://jquery.com/'>jQuery</a> by the jQuery Foundation Inc.</li>
-                            <li><a target='_blank' href='https://github.com/jquery/jquery-mousewheel/'>jQuery Mouse Wheel</a> by the jQuery Foundation Inc.</li>
-                        </ul>
-                    </p>
-                    <p>Credit must also be given <a target='_blank' href='https://github.com/yckart'>Yannick Albert</a> whose <a target='_blank' href='https://github.com/yckart/jquery.touch.js'>jQuery Touch</a> libary was a useful reference.</p>
-                    <p>
-                        The <a target='_blank' href='https://www.usgs.gov/'>USGS</a>'s <a target='_blank' href='https://landsat.usgs.gov/'>Landsat program</a> has been imaging the Earth for the past 45 years (see <a target='_blank' href='https://en.wikipedia.org/wiki/Landsat_program'>wiki</a>). Click <a target='_blank' href='https://www.esri.com/software/landsat-imagery'>here</a>, <a target='_blank' href='https://www.esri.com/landing-pages/software/landsat/unlock-earths-secrets'>here</a> and <a target='_blank' href='https://www.arcgis.com/home/item.html?id=d9b466d6a9e647ce8d1dd5fe12eb434b'>here</a> to learn more about the Landsat imagery hosted by Esri and specifically the recently announced <a target='_blank' href='http://landsatexplorer.esri.com/'>Landsat Explorer</a> app.
-                    </p>
-                    <p>
-                        Basemap: &copy; OpenStreetMap contributors, CC-BY-SA
-                    </p>
-                </div>
-            </div>
+  </div>
+  <div id='modalAbout' class='modal fade' tabindex='-1' role='dialog' aria-labelledby='label2'>
+    <div class='modal-dialog' role='document'>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span
+              aria-hidden='true'>&times;</span></button>
+          <h4 class='modal-title' id='label2'>About this App</h4>
         </div>
+        <div class='modal-body'>
+          <p>
+            <img class='rc-center' src='img/esri-black.png' height='43' />
+          </p>
+          <p>
+            This application was designed and developed by <a target='_blank' href='https://www.esri.com/'>Esri</a>'s <a
+              target='_blank' href='https://geonet.esri.com/groups/applications-prototype-lab'>Applications Prototype
+              Lab</a> in Redlands, California.
+          </p>
+          <p>
+            The source code is available <a target='_blank'
+              href='https://github.com/richiecarmichael/Esri-Landsat-Lens-2'>here</a>.
+          </p>
+          <p>
+            The application was built using the following technologies:
+          <ul style='margin-left: -20px;'>
+            <li><a target='_blank' href='https://developers.arcgis.com/javascript/'>ArcGIS API for JavaScript</a> by <a
+                target='_blank' href='https://www.esri.com'>Esri</a></li>
+            <li><a target='_blank' href='https://getbootstrap.com/'>Bootstrap</a> by <a target='_blank'
+                href='https://twitter.com/'>Twitter Inc.</a></li>
+            <li><a target='_blank' href='https://github.com/cowboy/jquery-throttle-debounce/'>jQuery Throttle /
+                Debounce</a> by <a target='_blank' href='https://github.com/cowboy'>Ben Alman</a></li>
+            <li><a target='_blank' href='https://jquery.com/'>jQuery</a> by the jQuery Foundation Inc.</li>
+            <li><a target='_blank' href='https://github.com/jquery/jquery-mousewheel/'>jQuery Mouse Wheel</a> by the
+              jQuery Foundation Inc.</li>
+          </ul>
+          </p>
+          <p>Credit must also be given <a target='_blank' href='https://github.com/yckart'>Yannick Albert</a> whose <a
+              target='_blank' href='https://github.com/yckart/jquery.touch.js'>jQuery Touch</a> libary was a useful
+            reference.</p>
+          <p>
+            The <a target='_blank' href='https://www.usgs.gov/'>USGS</a>'s <a target='_blank'
+              href='https://landsat.usgs.gov/'>Landsat program</a> has been imaging the Earth for the past 45 years (see
+            <a target='_blank' href='https://en.wikipedia.org/wiki/Landsat_program'>wiki</a>). Click <a target='_blank'
+              href='https://www.esri.com/software/landsat-imagery'>here</a>, <a target='_blank'
+              href='https://www.esri.com/landing-pages/software/landsat/unlock-earths-secrets'>here</a> and <a
+              target='_blank' href='https://www.arcgis.com/home/item.html?id=d9b466d6a9e647ce8d1dd5fe12eb434b'>here</a>
+            to learn more about the Landsat imagery hosted by Esri and specifically the recently announced <a
+              target='_blank' href='http://landsatexplorer.esri.com/'>Landsat Explorer</a> app.
+          </p>
+          <p>
+            Basemap: &copy; OpenStreetMap contributors, CC-BY-SA
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
 </body>
+
 </html>
